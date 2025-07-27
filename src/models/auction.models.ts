@@ -1,0 +1,88 @@
+export type PlayerKey = 'tadej' | 'jonas'
+
+export interface Team {
+  key: PlayerKey,
+  bot: Bot,
+  riders: {
+    name: string,
+    amount: number,
+    comment: string | null
+  }[],
+  moneyLeft: number
+}
+
+export interface Lot {
+  status: 'idle' | 'ongoing' | 'done',
+  playerOrder: string[],
+  rider: string,
+  winningBid: Bid | null,
+  allBids: Bid[]
+}
+
+export interface Bid {
+  player: PlayerKey,
+  amount: number | null,
+  comment: string | null,
+  isValid: boolean
+}
+
+export interface Bot {
+  key: PlayerKey
+  owner: string
+  name: string
+  type: 'script' | 'server'
+  code: (
+    rider: string,
+    highestBid: number | null,
+    highestBidBy: PlayerKey | null,
+    bids: {
+      player: PlayerKey,
+      amount: number,
+      comment: string | null
+    }[],
+    you: {
+      moneyLeft: number,
+      riders: {
+        name: string,
+        amount: number,
+        comment: string | null
+      }[]
+    },
+    others: {
+      key: PlayerKey,
+      moneyLeft: number,
+      riders: {
+        name: string,
+        amount: number,
+        comment: string | null
+      }[]
+    }[],
+    upcomingRiders: string[],
+    boughtRiders: string[]
+  ) => BotResponse
+}
+
+export interface BotResponse {
+  amount: number | null
+  comment: string | null
+}
+
+export type LogItem = {
+  type: 'AUCTION_STARTED'
+} | {
+  type: 'RIDER_START',
+  rider: string
+} | {
+  type: 'BID_RECEIVED',
+  player: Player,
+  amount: number | null,
+  comment: string | null
+} | {
+  type: 'RIDER_END',
+  rider: string,
+  player: Player | null,
+  amount: number | null,
+  comment: string | null
+} | {
+  type: 'AUCTION_ENDED'
+}
