@@ -33,6 +33,7 @@ export interface Bot {
   type: 'script' | 'server'
   code: (
     rider: string,
+    riderBib: number,
     highestBid: number | null,
     highestBidBy: PlayerKey | null,
     bids: {
@@ -58,7 +59,7 @@ export interface Bot {
       }[]
     }[],
     upcomingRiders: string[],
-    boughtRiders: string[]
+    previousRiders: string[]
   ) => BotResponse
 }
 
@@ -70,19 +71,10 @@ export interface BotResponse {
 export type LogItem = {
   type: 'AUCTION_STARTED'
 } | {
-  type: 'RIDER_START',
-  rider: string
-} | {
-  type: 'BID_RECEIVED',
-  player: Player,
-  amount: number | null,
-  comment: string | null
-} | {
-  type: 'RIDER_END',
+  type: 'LOT_ENDED',
   rider: string,
-  player: Player | null,
-  amount: number | null,
-  comment: string | null
+  winningBid: Bid | null,
+  allBids: Bid[]
 } | {
   type: 'AUCTION_ENDED'
 }

@@ -184,3 +184,7 @@ export const RIDERS = [
   "YATES Simon",
   "ZIMMERMANN Georg"
 ]
+
+export const RIDER_BIBS: { [rider: string]: number } = {
+  "WELLENS Tim": 10
+}

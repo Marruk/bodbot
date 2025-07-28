@@ -1,58 +1,54 @@
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
-import { ChevronsUpDown } from "lucide-react";
+import { Eye } from "lucide-react";
 import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 
-export default function AuctionInfo({ upcomingRiders }: { upcomingRiders: string[] }) {
+export default function AuctionInfo({ upcomingRiders, previousRiders }: { upcomingRiders: string[], previousRiders: string[] }) {
   return (
     <>
       <div>
-        <Collapsible>
-          <div className="flex items-center gap-">
+        <Sheet>
+          <div className="flex items-center gap-1">
             <h4 className="font-semibold">
               Nog {upcomingRiders.length} vrolijke snuiters te gaan
             </h4>
-            <CollapsibleTrigger>
+            <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="size-8">
-                <ChevronsUpDown />
+                <Eye />
                 <span className="sr-only">Toggle</span>
               </Button>
-            </CollapsibleTrigger>
+            </SheetTrigger>
           </div>
-          <CollapsibleContent>
-            <div className="text-xs text-muted-foreground text-ellipsis">
-              {upcomingRiders.join(', ')}
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle className="text-lg font-semibold">
+                Hoeveel moeten er nog komen?
+              </SheetTitle>
+              <SheetDescription>
+                { upcomingRiders.length } om precies te zijn
+              </SheetDescription>
+            </SheetHeader>
+            <div className="px-4">
+              { upcomingRiders.map((rider, index) => (
+                <div className="text-sm" key={index}>
+                  {rider}
+                </div>
+              ))}
+              { previousRiders.length > 0 && 
+                <>
+                  <div className="text-muted-foreground font-semibold mt-6 mb-2">
+                    Hoeveel zijn er al gegaan?
+                  </div>
+                  { previousRiders.map((rider, index) => (
+                    <div className="text-xs text-muted-foreground" key={index}>
+                      {rider}
+                    </div>
+                  ))}
+                </>
+              }
             </div>
-          </CollapsibleContent>
-        </Collapsible>
+          </SheetContent>
+        </Sheet>
       </div>
-      {/* <div className="flex items-stretch gap-6 mt-6">
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>Card Title</CardTitle>
-            <CardDescription>Card Description</CardDescription>
-            <CardAction>Card Action</CardAction>
-          </CardHeader>
-          <CardContent>
-            <p>Card Content</p>
-          </CardContent>
-          <CardFooter>
-            <p>Card Footer</p>
-          </CardFooter>
-        </Card>
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>Card Title</CardTitle>
-            <CardDescription>Card Description</CardDescription>
-            <CardAction>Card Action</CardAction>
-          </CardHeader>
-          <CardContent>
-            <p>Card Content</p>
-          </CardContent>
-          <CardFooter>
-            <p>Card Footer</p>
-          </CardFooter>
-        </Card>
-      </div> */}
     </>
   )
 }

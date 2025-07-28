@@ -1,4 +1,4 @@
-import type { Lot } from "@/models/auction.models";
+import type { LogItem, Lot } from "@/models/auction.models";
 import type { AuctionAction } from "./auction.actions";
 import { initialState, type State } from "./auction.state";
 
@@ -45,14 +45,7 @@ export function auctionReducer(state: State, action: AuctionAction): State {
           winningBid: null,
           allBids: []
         },
-        upcomingRiders: newArray,
-        log: [
-          ...state.log,
-          {
-            type: 'RIDER_START',
-            rider: action.rider
-          }
-        ]
+        upcomingRiders: newArray
       }
     }
     case 'bid-received': {
@@ -72,7 +65,7 @@ export function auctionReducer(state: State, action: AuctionAction): State {
         }
       }
     }
-    case 'rider-end': {
+    case 'lot-end': {
       const endedLot = state.currentLot
       if (endedLot === null) {
         return state
@@ -81,23 +74,13 @@ export function auctionReducer(state: State, action: AuctionAction): State {
       const winningBid = endedLot.winningBid
       const winnerIndex = state.teams.findIndex(t => winningBid?.player === t.key)
 
-      if (winningBid === null || winningBid.amount === null) {
-        return {
-          ...state,
-          currentLot: {
-            ...state.currentLot,
-            status: 'done',
-          } as Lot
-        }
-      }
-
       return {
         ...state,
         currentLot: {
           ...state.currentLot,
           status: 'done',
         } as Lot,
-        teams: [
+        teams: winningBid === null || winningBid.amount === null ? state.teams : [
           ...state.teams.map((team, index) => {
             if (index === winnerIndex) {
               return {
@@ -116,6 +99,19 @@ export function auctionReducer(state: State, action: AuctionAction): State {
               return team
             }
           }),
+        ],
+        previousRiders: [
+          ...state.previousRiders,
+          endedLot.rider
+        ],
+        log: [
+          ...state.log,
+          {
+            type: 'LOT_ENDED',
+            rider: endedLot.rider,
+            winningBid,
+            allBids: endedLot.allBids
+          } as LogItem
         ]
       }
     }

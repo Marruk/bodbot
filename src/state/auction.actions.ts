@@ -12,7 +12,7 @@ export type AuctionAction = {
   type: 'bid-received',
   bid: Bid
 } | {
-  type: 'rider-end'
+  type: 'lot-end'
 } | {
   type: 'end'
 };

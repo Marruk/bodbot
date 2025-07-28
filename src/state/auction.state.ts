@@ -7,6 +7,7 @@ export interface State {
   teams: Team[],
   currentLot: Lot | null,
   upcomingRiders: string[],
+  previousRiders: string[],
   log: LogItem[]
 }
 
@@ -20,5 +21,8 @@ export const initialState: State = {
   })),
   currentLot: null,
   upcomingRiders: [...RIDERS],
-  log: []
+  previousRiders: [],
+  log: [{
+    type: 'AUCTION_STARTED'
+  }]
 };

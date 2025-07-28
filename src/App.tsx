@@ -1,14 +1,18 @@
 import { Separator } from '@radix-ui/react-separator';
-import { Bike } from 'lucide-react';
-import { useReducer } from 'react';
+import { Bike, Rabbit, Tablets, Turtle } from 'lucide-react';
+import { useReducer, useRef, useState } from 'react';
 import './App.css';
 import AuctionInfo from './components/auction-info';
+import Log from './components/log';
 import Lot from './components/lot';
 import Teams from './components/teams';
-import { ThemeProvider } from './components/theme-provider';
-import { ThemeToggle } from './components/theme-toggle';
+import { ThemeProvider } from './components/theme/theme-provider';
+import { ThemeToggle } from './components/theme/theme-toggle';
 import { Button } from './components/ui/button';
+import { Switch } from './components/ui/switch';
+import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';
 import { BOTS } from './data/bots';
+import { RIDER_BIBS } from './data/riders';
 import type { Bid, PlayerKey, Team } from './models/auction.models';
 import { auctionReducer } from './state/auction.reducer';
 import { initialState, type State } from './state/auction.state';
@@ -24,11 +28,21 @@ function App() {
     initState
   );
 
+  const [isTurboMode, setTurboMode] = useState(false)
+  const [turboSpeed, setTurboSpeed] = useState("default")
+  const nextRiderRef = useRef<HTMLButtonElement>(null)
+
+  const turboSpeeds: { [label: string]: number } = {
+    "fast": 10,
+    "default": 500,
+    "slow": 1000
+  }
+
   const startAuction = () => dispatch({ type: 'start' })
   const restartAuction = () => dispatch({ type: 'restart' })
 
   const nextLot = async () => {
-    const { rider, playerOrder, players, upcomingRiders, boughtRiders } = prepareLotData(state)
+    const { rider, playerOrder, players, upcomingRiders, previousRiders } = prepareLotData(state)
 
     dispatch({ type: 'lot-start', rider, playerOrder })
 
@@ -60,6 +74,7 @@ function App() {
       try {
         const receivedBid = currentBidder?.bot.code(
           rider,
+          RIDER_BIBS[rider] ?? -1,
           highestBid?.amount ?? null,
           highestBid?.player ?? null,
           bids.filter(bid => bid.amount !== null).map(bid => ({
@@ -73,7 +88,7 @@ function App() {
           },
           players.filter(p => p.key !== currentBidderKey),
           upcomingRiders,
-          boughtRiders
+          previousRiders
         )
 
         bid.amount = receivedBid?.amount ?? null
@@ -97,15 +112,20 @@ function App() {
       dispatch({ type: 'bid-received', bid })
       currentBidderIndex = (currentBidderIndex + 1) % state.teams.length
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, turboSpeeds[turboSpeed]));
     }
 
-    dispatch({ type: 'rider-end' })
+    dispatch({ type: 'lot-end' })
 
-    if (state.upcomingRiders.length === 0) {
+    if (upcomingRiders.length === 0) {
       dispatch({
         type: 'end'
       })
+    } else {
+      if (isTurboMode) {
+        await new Promise((resolve) => setTimeout(resolve, turboSpeeds[turboSpeed]));
+        nextRiderRef.current?.click()
+      }
     }
   }
 
@@ -125,22 +145,55 @@ function App() {
       <div className="p-8">
         <div className="container mx-auto">
           <div className="flex items-center justify-between gap-8">
-            <AuctionInfo upcomingRiders={state.upcomingRiders}></AuctionInfo>
+            <AuctionInfo upcomingRiders={state.upcomingRiders} previousRiders={state.previousRiders}></AuctionInfo>
             <div>
             { state.status === 'idle' &&
                 <Button onClick={() => startAuction()}>
                   He ho lets go
                 </Button>
               }
-            { state.status === 'ongoing' &&
-              <Button disabled={state.currentLot?.status === 'ongoing'} onClick={() => nextLot()}>
-                Volgende fietser
-              </Button>
-            }
-            { state.status === 'done' &&
-              <Button onClick={() => restartAuction()}>
-                ff opnieuw
-              </Button>
+            { state.status !== 'idle' &&
+              <div className="flex-none flex items-center gap-12">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className={`text-sm whitespace-nowrap ${isTurboMode ? '' : 'text-muted-foreground'}`}>
+                      T-t-turbo
+                    </div>
+                    <Switch
+                      checked={isTurboMode}
+                      onCheckedChange={setTurboMode}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="text-sm whitespace-nowrap">
+                    Snelheid
+                  </div>
+                  <ToggleGroup onValueChange={setTurboSpeed} defaultValue="default" type="single" variant="outline">
+                    <ToggleGroupItem value="fast">
+                      <Tablets size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="default">
+                      <Rabbit size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="slow">
+                      <Turtle size={16} />
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+                <div className="text-right min-w-[160px]">
+                  { state.status === 'ongoing' &&
+                    <Button ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => nextLot()}>
+                      Volgende fietser
+                    </Button>
+                  }
+                  { state.status === 'done' &&
+                    <Button onClick={() => restartAuction()}>
+                      Even opnieuw hoor
+                    </Button>
+                  }
+                </div>
+              </div>
             }
             </div>
           </div>
@@ -159,7 +212,7 @@ function App() {
               }
             </div>
             <div className="break-inside-avoid-column">
-
+              <Log items={state.log} />
             </div>
           </div>
         </div>
@@ -174,7 +227,7 @@ function App() {
 
 export default App
 
-function prepareLotData(state: State): { rider: string, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], boughtRiders: string[]; } {
+function prepareLotData(state: State): { rider: string, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[]; } {
   const randomRiderIndex = Math.floor(Math.random() * (state.upcomingRiders.length - 1))
   const rider = state.upcomingRiders[randomRiderIndex]
   const randomOrder = shufflePlayerOrder(Array(state.teams.length).fill(0).map((_, i) => i))
@@ -188,7 +241,7 @@ function prepareLotData(state: State): { rider: string, playerOrder: PlayerKey[]
     playerOrder: randomPlayerOrder,
     players: state.teams,
     upcomingRiders,
-    boughtRiders: state.teams.flatMap(t => t.riders.map(r => r.name)).sort((b, a) => a.localeCompare(b))
+    previousRiders: state.previousRiders
   }
 }
 

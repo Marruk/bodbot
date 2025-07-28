@@ -1,5 +1,5 @@
 export function bot(
-  rider, highestBid, highestBidBy, bids, you, others, upcomingRiders, boughtRiders
+  rider, riderBib, highestBid, highestBidBy, bids, you, others, upcomingRiders, boughtRiders
 ) {
   const randomAmount = (highestBid ?? 0) + (100000 * Math.round(Math.random() * 5 + 1))
 
