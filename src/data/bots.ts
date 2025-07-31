@@ -1,7 +1,10 @@
-// @ts-expect-error-start "voor de javascript noobjes"
-import { bot as tadej } from "../bots/tadej"
-import { bot as jonas } from "../bots/jonas"
-import { bot as daan } from "../bots/daan"
+// @ts-expect-error "javascript noob"
+import tadej from "../bots/tadej"
+// @ts-expect-error "javascript noob"
+import mark from "../bots/mark"
+import jonas from "../bots/jonas"
+import daan from "../bots/daan"
+
 import type { Bot } from "../models/auction.models"
 
 export const BOTS: { [key: string]: Bot } = {
@@ -25,5 +28,12 @@ export const BOTS: { [key: string]: Bot } = {
     name: 'De ultieme veiler',
     type: 'script',
     code: daan
+  },
+  'mark': {
+    key: 'mark',
+    owner: 'Mark',
+    name: 'De ultieme veiler',
+    type: 'script',
+    code: mark
   }
 }

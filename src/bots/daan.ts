@@ -15,7 +15,7 @@ interface BodBy {
   comment: string | null
 }
 
-export function bot(
+export default function bot(
   rider: string, riderBib: number, highestBid: number | null, highestBidBy: PlayerKey | null, bids: BodBy[], you: Player, others: Player[], upcomingRiders: string[], previousRiders: string[]
 ): BotResponse {
   let amount = 0;

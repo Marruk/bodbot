@@ -1,4 +1,4 @@
-export type PlayerKey = 'tadej' | 'jonas' | 'daan'
+export type PlayerKey = 'tadej' | 'jonas' | 'daan' | 'mark'
 
 export interface Team {
   key: PlayerKey,

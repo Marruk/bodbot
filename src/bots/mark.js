@@ -1,0 +1,1 @@
+export default function bot(e,t,n,o,a,m,r,u,d){var n=(n??0)+1e5*Math.round(5*Math.random()+1),f=Math.random()<.5;return{amount:f?null:Math.min(m.moneyLeft,n),comment:f?"deze hoef ik niet":"geef"}}
