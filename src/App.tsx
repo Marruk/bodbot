@@ -1,17 +1,15 @@
 import { Separator } from '@radix-ui/react-separator';
-import { Bike, Copy, Import, Rabbit, Tablets, Turtle } from 'lucide-react';
+import { Rabbit, Tablets, Turtle } from 'lucide-react';
 import { useReducer, useRef, useState } from 'react';
-import { toast } from 'sonner';
+import { Toaster } from 'sonner';
 import './App.css';
 import AuctionInfo from './components/auction-info';
+import Header from './components/header';
 import Log from './components/log';
 import Lot from './components/lot';
 import Teams from './components/teams';
-import { ThemeProvider } from './components/theme/theme-provider';
-import { ThemeToggle } from './components/theme/theme-toggle';
+import { useTheme } from './components/theme/theme-provider';
 import { Button } from './components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './components/ui/dialog';
-import { Input } from './components/ui/input';
 import { Switch } from './components/ui/switch';
 import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';
 import { BOTS } from './data/bots';
@@ -31,10 +29,9 @@ function App() {
     initState
   );
 
+  const { theme } = useTheme()
   const [isTurboMode, setTurboMode] = useState(false)
   const [turboSpeed, setTurboSpeed] = useState("default")
-  const [importJsonString, setImportJsonString] = useState("")
-  const [importDialogOpen, setImportDialogOpen] = useState(false)
   const nextRiderRef = useRef<HTMLButtonElement>(null)
 
   const turboSpeeds: { [label: string]: number } = {
@@ -134,69 +131,18 @@ function App() {
     }
   }
 
-  const copyState = () => {
-    navigator.clipboard.writeText(JSON.stringify(state))
-    toast("Tsjak gekopieerd")
+  const getSerializedState = (): string => {
+    return JSON.stringify(state)
   }
 
-  const setState = () => {
-    try {
-      dispatch({
-        type: 'import-state',
-        state: JSON.parse(importJsonString) as State
-      })
-      toast("Tsjak gekopieerd")
-      setImportDialogOpen(false)
-      setImportJsonString("")
-    } catch {
-      toast("Niet gelukt jammer joh")
-    }
+  const setState = (state: State)  => {
+    dispatch({ type: 'import-state', state })
   }
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <>
       <div className="flex flex-col min-h-screen">
-        <div className="p-8">
-          <div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Bike /><h1 className="text-2xl font-bold">Lekker veilen zonder met elkaar te hoeven praten</h1>
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={() => copyState()} variant="outline">
-                  <Copy /> Copy
-                </Button>
-                <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
-                  <form>
-                    <DialogTrigger asChild>
-                      <Button variant="outline">
-                        <Import />
-                        Import
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Importeer tsjak</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid gap-4">
-                        <div className="grid gap-3">
-                          <Input id="input" name="input" value={importJsonString} onChange={e => setImportJsonString(e.target.value)} />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button variant="outline">Nee</Button>
-                        </DialogClose>
-                        <Button onClick={() => setState()} type="submit">Importeer</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </form>
-                </Dialog>
-                <ThemeToggle />
-              </div>
-            </div>
-          </div>
-        </div>
+        <Header getSerializedState={getSerializedState} setState={setState} />
         <div className="flex-1 px-8">
           <Teams teams={state.teams}></Teams>
           <div className="gap-16">
@@ -272,7 +218,16 @@ function App() {
           </div>
         </div>
       </div>
-    </ThemeProvider>
+      <Toaster
+        richColors
+        position="top-center"
+        theme={
+          theme === "dark" ? "light" :
+            theme === "light" ? "dark" :
+            (window.matchMedia("(prefers-color-scheme: dark)") ? "light" : "dark")
+          }
+      />
+    </>
   )
 }
 
