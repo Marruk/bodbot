@@ -64,7 +64,7 @@ function App() {
       const currentBidder = state.teams.find(team => team.key === currentBidderKey)
       const highestBid = bids.filter(bid => bid.amount !== null && bid.isValid).sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0))[0]
 
-      if (currentBidder === undefined || currentBidder.riders.length === 8 || ((currentBidder.moneyLeft ?? 0) < (highestBid?.amount ?? 0) + 100000)) {
+      if (currentBidder === undefined || currentBidder.riders.length === 8 || ((currentBidder.moneyLeft ?? 0) < (highestBid?.amount ?? 0) + 100_000)) {
         currentBidderIndex = (currentBidderIndex + 1) % state.teams.length
         continue
       }
@@ -104,8 +104,8 @@ function App() {
       }
 
       if ((bid.amount ?? 0) > currentBidder.moneyLeft ||
-          ((bid.amount ?? 0) % 100000 !== 0) ||
-          (bid.amount !== null && (bid.amount < (highestBid?.amount ?? 0) + 100000))) {
+          ((bid.amount ?? 0) % 100_000 !== 0) ||
+          (bid.amount !== null && (bid.amount < (highestBid?.amount ?? 0) + 100_000))) {
         bid.isValid = false
       }
 
