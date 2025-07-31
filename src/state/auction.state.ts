@@ -16,7 +16,7 @@ export const initialState: State = {
   teams: Object.values(BOTS).map(bot => ({
     key: bot.key,
     bot,
-    moneyLeft: 10000000,
+    moneyLeft: 10_000_000,
     riders: [] as { name: string, amount: number, comment: string | null }[]
   })),
   currentLot: null,
