@@ -12,7 +12,7 @@ export function bot(
   highestBid: number | null, // hoogste bod, is nooit van jou
   highestBidBy: 'tadej' | 'jonas' | 'daan' | null, // hoogste bod persoon
   bids: { // alle boden (in oplopende volgorde), inclusief die van jou
-    player: 'tadej' | 'jonas', // naam
+    player: 'tadej' | 'jonas' | 'daan', // naam
     amount: number, // geboden bedrag
     comment: string | null, // leuk berichtje
   }[],
@@ -25,7 +25,7 @@ export function bot(
     }[],
   },
   others: { // de rest, jij komt hier niet voor
-    key: 'jonas' | 'tadej', // iedereen die meedoet
+    key: 'jonas' | 'tadej' | 'daan', // iedereen die meedoet
     moneyLeft: number, // hoeveel geld ze nog hebben
     riders: { // wie ze al in hun team hebben
       name: string, // fietser
