@@ -10,7 +10,7 @@ export function bot(
   rider: string, // naam zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical
   riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical (-1 als het niet bekend is)
   highestBid: number | null, // hoogste bod, is nooit van jou
-  highestBidBy: 'tadej' | 'jonas' | null, // hoogste bod persoon
+  highestBidBy: 'tadej' | 'jonas' | 'daan' | null, // hoogste bod persoon
   bids: { // alle boden (in oplopende volgorde), inclusief die van jou
     player: 'tadej' | 'jonas', // naam
     amount: number, // geboden bedrag
