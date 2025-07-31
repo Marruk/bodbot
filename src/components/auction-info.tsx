@@ -18,7 +18,7 @@ export default function AuctionInfo({ upcomingRiders, previousRiders }: { upcomi
               </Button>
             </SheetTrigger>
           </div>
-          <SheetContent>
+          <SheetContent className="max-h-screen overflow-y-scroll">
             <SheetHeader>
               <SheetTitle className="text-lg font-semibold">
                 Hoeveel moeten er nog komen?
@@ -27,7 +27,7 @@ export default function AuctionInfo({ upcomingRiders, previousRiders }: { upcomi
                 { upcomingRiders.length } om precies te zijn
               </SheetDescription>
             </SheetHeader>
-            <div className="px-4">
+            <div className="px-4 pb-4">
               { upcomingRiders.map((rider, index) => (
                 <div className="text-sm" key={index}>
                   {rider}

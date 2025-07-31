@@ -1,6 +1,7 @@
 import type { LogItem, Lot } from "@/models/auction.models";
 import type { AuctionAction } from "./auction.actions";
 import { initialState, type State } from "./auction.state";
+import { BOTS } from "@/data/bots";
 
 export function auctionReducer(state: State, action: AuctionAction): State {
   switch (action.type) {
@@ -112,6 +113,17 @@ export function auctionReducer(state: State, action: AuctionAction): State {
             winningBid,
             allBids: endedLot.allBids
           } as LogItem
+        ]
+      }
+    }
+    case 'import-state': {
+      return {
+        ...action.state,
+        teams: [
+          ...action.state.teams.map(t => ({
+            ...t,
+            bot: BOTS[t.key]
+          }))
         ]
       }
     }

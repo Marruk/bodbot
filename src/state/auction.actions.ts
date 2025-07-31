@@ -1,4 +1,5 @@
 import type { Bid } from "@/models/auction.models";
+import type { State } from "./auction.state";
 
 export type AuctionAction = {
   type: 'start'
@@ -15,4 +16,7 @@ export type AuctionAction = {
   type: 'lot-end'
 } | {
   type: 'end'
+} | {
+  type: 'import-state',
+  state: State
 };

@@ -1,6 +1,7 @@
 import { BOTS } from "@/data/bots";
 import type { Lot } from "@/models/auction.models";
 import { Separator } from "@radix-ui/react-separator";
+import Money from "./money";
 import { Card, CardContent } from "./ui/card";
 
 export default function Lot({ lot }: { lot: Lot }) {
@@ -17,7 +18,7 @@ export default function Lot({ lot }: { lot: Lot }) {
       <Separator className="bg-border h-px my-6" />
       <div>
         <div className="text-4xl">
-          €{new Intl.NumberFormat().format(lot.winningBid?.amount ?? 0)}
+          <Money amount={lot.winningBid?.amount ?? 0} />
           { lot.winningBid !== null &&
             <>
               &nbsp;door {BOTS[lot.winningBid.player].owner}
