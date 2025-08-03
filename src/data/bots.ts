@@ -32,8 +32,15 @@ export const BOTS: { [key: string]: Bot } = {
   'mark': {
     key: 'mark',
     owner: 'Mark',
-    name: 'De ultieme veiler',
+    name: 'Lekker Fietsen',
     type: 'script',
     code: mark
+  },
+  'niels': {
+    key: 'niels',
+    owner: 'Niels',
+    name: 'Worstenbroodje',
+    type: 'server',
+    endpoint: 'https://www.google.com'
   }
 }

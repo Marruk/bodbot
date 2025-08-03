@@ -1,4 +1,4 @@
-export type PlayerKey = 'tadej' | 'jonas' | 'daan' | 'mark'
+export type PlayerKey = 'tadej' | 'jonas' | 'daan' | 'mark' | 'niels'
 
 export interface Team {
   key: PlayerKey,
@@ -14,6 +14,7 @@ export interface Team {
 export interface Lot {
   status: 'idle' | 'ongoing' | 'done',
   playerOrder: string[],
+  currentBidder: number,
   rider: string,
   winningBid: Bid | null,
   allBids: Bid[]
@@ -23,7 +24,8 @@ export interface Bid {
   player: PlayerKey,
   amount: number | null,
   comment: string | null,
-  isValid: boolean
+  isValid: boolean,
+  isLoading: boolean
 }
 
 export interface Bot {
@@ -31,7 +33,8 @@ export interface Bot {
   owner: string
   name: string
   type: 'script' | 'server'
-  code: (
+  endpoint?: string,
+  code?: (
     rider: string,
     riderBib: number,
     highestBid: number | null,

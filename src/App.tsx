@@ -14,7 +14,7 @@ import { Switch } from './components/ui/switch';
 import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';
 import { BOTS } from './data/bots';
 import { RIDER_BIBS } from './data/riders';
-import type { Bid, PlayerKey, Team } from './models/auction.models';
+import type { Bid, BotResponse, PlayerKey, Team } from './models/auction.models';
 import { auctionReducer } from './state/auction.reducer';
 import { initialState, type State } from './state/auction.state';
 
@@ -70,28 +70,39 @@ function App() {
         player: currentBidderKey,
         amount: null,
         comment: null,
-        isValid: true
+        isValid: true,
+        isLoading: true
       }
 
+      dispatch({ type: 'bid-pending', bid })
+
       try {
-        const receivedBid = currentBidder?.bot.code(
-          rider,
-          RIDER_BIBS[rider] ?? -1,
-          highestBid?.amount ?? null,
-          highestBid?.player ?? null,
-          bids.filter(bid => bid.amount !== null).map(bid => ({
+        let receivedBid: BotResponse | undefined = undefined
+
+        const bidInput = {
+          rider: rider,
+          riderBib: RIDER_BIBS[rider] ?? -1,
+          highestBid: highestBid?.amount ?? null,
+          highestBidBy: highestBid?.player ?? null,
+          bids: bids.filter(bid => bid.amount !== null).map(bid => ({
             player: bid.player,
             amount: bid.amount ?? -1,
             comment: bid.comment
           })),
-          {
+          you: {
             moneyLeft: currentBidder.moneyLeft,
             riders: currentBidder.riders
           },
-          players.filter(p => p.key !== currentBidderKey),
-          upcomingRiders,
-          previousRiders
-        )
+          others: players.filter(p => p.key !== currentBidderKey),
+          upcomingRiders: upcomingRiders,
+          previousRiders: previousRiders
+        }
+
+        if (currentBidder.bot.type === 'script' && currentBidder.bot.code !== undefined) {
+          receivedBid = currentBidder?.bot.code(bidInput.rider, bidInput.riderBib, bidInput.highestBid, bidInput.highestBidBy, bidInput.bids, bidInput.you, bidInput.others, bidInput.upcomingRiders, bidInput.previousRiders)
+        } else if (currentBidder.bot.type === 'server' && currentBidder.bot.endpoint !== undefined) {
+          receivedBid = await getBid(currentBidder.bot.endpoint, bidInput)
+        }
 
         bid.amount = receivedBid?.amount ?? null
         bid.comment = receivedBid?.comment ?? null
@@ -101,15 +112,20 @@ function App() {
       }
 
       if ((bid.amount ?? 0) > currentBidder.moneyLeft ||
-          ((bid.amount ?? 0) % 100_000 !== 0) ||
-          (bid.amount !== null && (bid.amount < (highestBid?.amount ?? 0) + 100_000))) {
+        ((bid.amount ?? 0) % 100_000 !== 0) ||
+        (bid.amount !== null && (bid.amount < (highestBid?.amount ?? 0) + 100_000))) {
         bid.isValid = false
+      }
+
+      if (bid.amount === 0) {
+        bid.amount = null
       }
 
       if (bid.isValid && bid.amount !== null) {
         currentHighestBidderIndex = currentBidderIndex
       }
 
+      bid.isLoading = false
       bids.push(bid)
       dispatch({ type: 'bid-received', bid })
       currentBidderIndex = (currentBidderIndex + 1) % state.teams.length
@@ -135,7 +151,7 @@ function App() {
     return JSON.stringify(state)
   }
 
-  const setState = (state: State)  => {
+  const setState = (state: State) => {
     dispatch({ type: 'import-state', state })
   }
 
@@ -147,7 +163,7 @@ function App() {
           <Teams teams={state.teams}></Teams>
           <div className="gap-16">
             <div className="break-inside-avoid-column flex-1">
-              { state.status === 'ongoing' && state.currentLot !== null &&
+              {state.status === 'ongoing' && state.currentLot !== null &&
                 <Lot lot={state.currentLot} />
               }
             </div>
@@ -163,54 +179,54 @@ function App() {
             <div>
               <div className="flex items-center justify-between gap-8">
                 <div>
-                { state.status === 'idle' &&
+                  {state.status === 'idle' &&
                     <Button onClick={() => startAuction()}>
                       He ho lets go
                     </Button>
                   }
-                { state.status !== 'idle' &&
-                  <div className="flex-none flex items-center gap-12">
-                    <div className="text-right min-w-[160px]">
-                      { state.status === 'ongoing' &&
-                        <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => nextLot()}>
-                          Volgende fietser
-                        </Button>
-                      }
-                      { state.status === 'done' &&
-                        <Button onClick={() => restartAuction()}>
-                          Even opnieuw hoor
-                        </Button>
-                      }
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm whitespace-nowrap">
-                        Snelheid
+                  {state.status !== 'idle' &&
+                    <div className="flex-none flex items-center gap-12">
+                      <div className="text-right min-w-[160px]">
+                        {state.status === 'ongoing' &&
+                          <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => nextLot()}>
+                            Volgende fietser
+                          </Button>
+                        }
+                        {state.status === 'done' &&
+                          <Button onClick={() => restartAuction()}>
+                            Even opnieuw hoor
+                          </Button>
+                        }
                       </div>
-                      <ToggleGroup onValueChange={setTurboSpeed} defaultValue="default" type="single" variant="outline">
-                        <ToggleGroupItem value="fast">
-                          <Tablets size={16} />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="default">
-                          <Rabbit size={16} />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="slow">
-                          <Turtle size={16} />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </div>
-                    <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
-                        <div className={`text-sm whitespace-nowrap ${isTurboMode ? '' : 'text-muted-foreground'}`}>
-                          T-t-turbo
+                        <div className="text-sm whitespace-nowrap">
+                          Snelheid
                         </div>
-                        <Switch
-                          checked={isTurboMode}
-                          onCheckedChange={setTurboMode}
-                        />
+                        <ToggleGroup onValueChange={setTurboSpeed} defaultValue="default" type="single" variant="outline">
+                          <ToggleGroupItem value="fast">
+                            <Tablets size={16} />
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="default">
+                            <Rabbit size={16} />
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="slow">
+                            <Turtle size={16} />
+                          </ToggleGroupItem>
+                        </ToggleGroup>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <div className={`text-sm whitespace-nowrap ${isTurboMode ? '' : 'text-muted-foreground'}`}>
+                            T-t-turbo
+                          </div>
+                          <Switch
+                            checked={isTurboMode}
+                            onCheckedChange={setTurboMode}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                }
+                  }
                 </div>
                 <AuctionInfo upcomingRiders={state.upcomingRiders} previousRiders={state.previousRiders}></AuctionInfo>
               </div>
@@ -224,8 +240,8 @@ function App() {
         theme={
           theme === "dark" ? "light" :
             theme === "light" ? "dark" :
-            (window.matchMedia("(prefers-color-scheme: dark)") ? "light" : "dark")
-          }
+              (window.matchMedia("(prefers-color-scheme: dark)") ? "light" : "dark")
+        }
       />
     </>
   )
@@ -263,5 +279,19 @@ function shufflePlayerOrder(array: number[]) {
   }
 
   return array
+}
+
+function getBid(endpoint: string, bidInput: { rider: string; riderBib: number; highestBid: number | null; highestBidBy: PlayerKey; bids: { player: PlayerKey; amount: number; comment: string | null; }[]; you: { moneyLeft: number; riders: { name: string; amount: number; comment: string | null; }[]; }; others: Team[]; upcomingRiders: string[]; previousRiders: string[]; }): Promise<BotResponse> {
+  const headers: Headers = new Headers()
+  headers.set('Content-Type', 'application/json')
+  headers.set('Accept', 'application/json')
+
+  const request: RequestInfo = new Request(endpoint, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(bidInput)
+  })
+
+  return fetch(request).then(response => response.json())
 }
 

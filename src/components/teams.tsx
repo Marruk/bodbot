@@ -1,6 +1,8 @@
 import type { Team } from "@/models/auction.models";
+import { MessageSquareText } from "lucide-react";
 import Money from "./money";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function Teams({ teams }: { teams: Team[] }) {
   return (
@@ -27,8 +29,22 @@ export default function Teams({ teams }: { teams: Team[] }) {
                           -
                         </div>
                         :
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="overflow-hidden text-ellipsis whitespace-nowrap">{rider.name}</div>
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="overflow-hidden flex items-center gap-1">
+                            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                              {rider.name}
+                            </div>
+                            {rider.comment && 
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <MessageSquareText className="flex-none text-muted-foreground" size={12} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>&ldquo;{rider.comment}&rdquo;</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            }
+                          </div>
                           <div className="text-muted-foreground">
                             <Money amount={rider.amount} />
                           </div>

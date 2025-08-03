@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import type {BotResponse, PlayerKey} from "@/models/auction.models.ts";
 
 interface Player {

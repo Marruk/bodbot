@@ -10,6 +10,9 @@ export type AuctionAction = {
   rider: string,
   playerOrder: string[]
 } | {
+  type: 'bid-pending',
+  bid: Bid
+}| {
   type: 'bid-received',
   bid: Bid
 } | {

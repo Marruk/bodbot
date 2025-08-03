@@ -42,6 +42,7 @@ export function auctionReducer(state: State, action: AuctionAction): State {
         currentLot: {
           status: 'ongoing',
           playerOrder: action.playerOrder,
+          currentBidder: 0,
           rider: action.rider,
           winningBid: null,
           allBids: []
@@ -49,19 +50,32 @@ export function auctionReducer(state: State, action: AuctionAction): State {
         upcomingRiders: newArray
       }
     }
+    case 'bid-pending': {
+      return {
+        ...state,
+        currentLot: state.currentLot === null ? null : {
+          ...state.currentLot,
+          currentBidder: state.currentLot.playerOrder.indexOf(action.bid.player),
+          allBids: [
+            ...state.currentLot.allBids,
+            action.bid
+          ]
+        }
+      }
+    }
     case 'bid-received': {
-      const newBid = action.bid
-
-      const oldBid = state.currentLot?.winningBid ?? null
+      const bid = action.bid
+      const currentWinningBid = state.currentLot?.winningBid ?? null
 
       return {
         ...state,
         currentLot: state.currentLot === null ? null : {
           ...state.currentLot,
-          winningBid: (oldBid?.amount ?? 0) < (newBid.amount ?? 0) ? newBid : oldBid,
+          currentBidder: (state.currentLot.playerOrder.indexOf(action.bid.player) + 1) % state.currentLot.playerOrder.length,
+          winningBid: (currentWinningBid?.amount ?? 0) < (bid.amount ?? 0) ? bid : currentWinningBid,
           allBids: [
-            ...state.currentLot.allBids,
-            newBid
+            ...state.currentLot.allBids.slice(0, -1),
+            bid
           ]
         }
       }
