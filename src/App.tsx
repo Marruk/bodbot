@@ -34,16 +34,13 @@ function App() {
   const [turboSpeed, setTurboSpeed] = useState("default")
   const nextRiderRef = useRef<HTMLButtonElement>(null)
 
-  const turboSpeeds: { [label: string]: number } = {
+  const TURBO_SPEEDS: { [label: string]: number } = {
     "fast": 10,
     "default": 500,
     "slow": 1000
   }
 
-  const startAuction = () => dispatch({ type: 'start' })
-  const restartAuction = () => dispatch({ type: 'restart' })
-
-  const nextLot = async () => {
+  const startLot = async () => {
     const { rider, playerOrder, players, upcomingRiders, previousRiders } = prepareLotData(state)
 
     dispatch({ type: 'lot-start', rider, playerOrder })
@@ -130,7 +127,7 @@ function App() {
       dispatch({ type: 'bid-received', bid })
       currentBidderIndex = (currentBidderIndex + 1) % state.teams.length
 
-      await new Promise((resolve) => setTimeout(resolve, turboSpeeds[turboSpeed]));
+      await new Promise((resolve) => setTimeout(resolve, TURBO_SPEEDS[turboSpeed]));
     }
 
     dispatch({ type: 'lot-end' })
@@ -141,7 +138,7 @@ function App() {
       })
     } else {
       if (isTurboMode) {
-        await new Promise((resolve) => setTimeout(resolve, turboSpeeds[turboSpeed]));
+        await new Promise((resolve) => setTimeout(resolve, TURBO_SPEEDS[turboSpeed]));
         nextRiderRef.current?.click()
       }
     }
@@ -169,64 +166,54 @@ function App() {
             </div>
           </div>
         </div>
-        <Separator className="bg-border data-[orientation=horizontal]:h-px" />
-        <div className="p-8">
-          <Log items={state.log} />
-        </div>
+        <Log items={state.log} />
         <div className="sticky bottom-0 bg-background shadow-md">
           <Separator className="bg-border data-[orientation=horizontal]:h-px" />
           <div className="p-8">
             <div>
               <div className="flex items-center justify-between gap-8">
                 <div>
-                  {state.status === 'idle' &&
-                    <Button onClick={() => startAuction()}>
-                      He ho lets go
-                    </Button>
-                  }
-                  {state.status !== 'idle' &&
-                    <div className="flex-none flex items-center gap-12">
-                      <div className="text-right min-w-[160px]">
-                        {state.status === 'ongoing' &&
-                          <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => nextLot()}>
-                            Volgende fietser
-                          </Button>
-                        }
-                        {state.status === 'done' &&
-                          <Button onClick={() => restartAuction()}>
-                            Even opnieuw hoor
-                          </Button>
-                        }
+                  <div className="flex-none flex items-center gap-12">
+                    <div className="text-right min-w-[160px]">
+                      {state.status === 'ongoing' &&
+                        <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => startLot()}>
+                          Volgende fietser
+                        </Button>
+                      }
+                      {state.status === 'done' &&
+                        <Button onClick={() => dispatch({ type: 'restart' })}>
+                          Even opnieuw hoor
+                        </Button>
+                      }
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm whitespace-nowrap">
+                        Snelheid
                       </div>
+                      <ToggleGroup onValueChange={setTurboSpeed} defaultValue="default" type="single" variant="outline">
+                        <ToggleGroupItem value="fast">
+                          <Tablets size={16} />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="default">
+                          <Rabbit size={16} />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="slow">
+                          <Turtle size={16} />
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                    </div>
+                    <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
-                        <div className="text-sm whitespace-nowrap">
-                          Snelheid
+                        <div className={`text-sm whitespace-nowrap ${isTurboMode ? '' : 'text-muted-foreground'}`}>
+                          T-t-turbo
                         </div>
-                        <ToggleGroup onValueChange={setTurboSpeed} defaultValue="default" type="single" variant="outline">
-                          <ToggleGroupItem value="fast">
-                            <Tablets size={16} />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="default">
-                            <Rabbit size={16} />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="slow">
-                            <Turtle size={16} />
-                          </ToggleGroupItem>
-                        </ToggleGroup>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <div className={`text-sm whitespace-nowrap ${isTurboMode ? '' : 'text-muted-foreground'}`}>
-                            T-t-turbo
-                          </div>
-                          <Switch
-                            checked={isTurboMode}
-                            onCheckedChange={setTurboMode}
-                          />
-                        </div>
+                        <Switch
+                          checked={isTurboMode}
+                          onCheckedChange={setTurboMode}
+                        />
                       </div>
                     </div>
-                  }
+                  </div>
                 </div>
                 <AuctionInfo upcomingRiders={state.upcomingRiders} previousRiders={state.previousRiders}></AuctionInfo>
               </div>

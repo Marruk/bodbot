@@ -12,7 +12,7 @@ export interface Team {
 }
 
 export interface Lot {
-  status: 'idle' | 'ongoing' | 'done',
+  status: 'ongoing' | 'done',
   playerOrder: string[],
   currentBidder: number,
   rider: string,

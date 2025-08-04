@@ -39,7 +39,7 @@ export const BOTS: { [key: string]: Bot } = {
   'niels': {
     key: 'niels',
     owner: 'Niels',
-    name: 'Worstenbroodje',
+    name: 'De gezelligstebiedbot',
     type: 'server',
     endpoint: 'https://www.google.com'
   }

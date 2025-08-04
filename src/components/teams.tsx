@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 export default function Teams({ teams }: { teams: Team[] }) {
   return (
     <>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-2">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2">
         {teams.map(team => (
           <Card className="max-w-[320px]" key={team.key}>
             <CardHeader className="border-b">
@@ -31,9 +31,16 @@ export default function Teams({ teams }: { teams: Team[] }) {
                         :
                         <div className="flex items-center justify-between gap-4">
                           <div className="overflow-hidden flex items-center gap-1">
-                            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-                              {rider.name}
-                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                  {rider.name}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                {rider.name}
+                              </TooltipContent>
+                            </Tooltip>
                             {rider.comment && 
                               <Tooltip>
                                 <TooltipTrigger asChild>

@@ -16,8 +16,8 @@ export default function Lot({ lot }: { lot: Lot }) {
           <div className="text-sm text-muted-foreground">Volgorde van bieden</div>
           <div className="flex gap-1">
             {lot.playerOrder.map((key, index) => (
-              <Badge key={index} variant="secondary" className={"transition-all border-border " + (lot.currentBidder === index ? "shadow-lg -translate-y-1" : "")}>
-                <span className="text-muted-foreground">{index+1}.</span> {BOTS[key].owner}
+              <Badge key={index} variant="secondary" className={"transition-all border-border " + (lot.currentBidder === index ? "border-muted-foreground shadow-lg -translate-y-1" : "")}>
+                <span className="text-muted-foreground">{index + 1}.</span> {BOTS[key].owner}
               </Badge>
             ))}
           </div>

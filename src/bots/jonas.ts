@@ -45,6 +45,18 @@ export default function bot(
 
   return {
     amount: doBid ? null : Math.min(you.moneyLeft, randomAmount),
-    comment: doBid ? "deze hoef ik niet" : "geef"
+    comment: doBid ? "deze hoef ik niet" : `The native method filter will loop through the array and leave only those entries that pass the given callback function onlyUnique.
+
+onlyUnique checks, if the given value is the first occurring. If not, it must be a duplicate and will not be copied.
+
+This solution works without any extra library like jQuery or prototype.js.
+
+It works for arrays with mixed value types too.
+
+For old Browsers (<ie9), that do not support the native methods filter and indexOf you can find work arounds in the MDN documentation for filter and indexOf.
+
+If you want to keep the last occurrence of a value, simply replace indexOf with lastIndexOf.
+
+With ES6 this can be shorten to:`
   }
 }
