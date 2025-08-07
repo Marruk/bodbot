@@ -1,29 +1,54 @@
 import { BOTS } from "@/data/bots";
-import { Card, CardContent } from "./ui/card";
 import type { Bid } from "@/models/auction.models";
+import { BadgeEuro, BadgeX, CircleX } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Skeleton } from "./ui/skeleton";
 
 export default function BidCard({ bid }: { bid: Bid }) {
+  const [{ bidSkeletonWidth, commentSkeletonWidth }, setSkeletonWidths] = useState({ bidSkeletonWidth: 0, commentSkeletonWidth: 0 });
+
+  useEffect(() => {
+    setSkeletonWidths({
+      bidSkeletonWidth: (Math.round(Math.random() * 10) * 8) + 48,
+      commentSkeletonWidth: (Math.round(Math.random() * 10) * 8) + 120,
+    })
+  }, []);
+
   return (
-    <Card>
-      <CardContent>
-        {bid.isLoading === true ?
-          <>
-            We wachten even op {BOTS[bid.player].owner}
-          </>
+    <div className={"flex items-start gap-4 " + (!bid.isLoading && (!bid.isValid || (bid.amount ?? 0) === 0) ? "opacity-50" : "")}>
+      <div className="flex-none size-[24px] flex items-center content-center">
+        {bid.isLoading ?
+          <svg className="relative z-[-1] size-[20px] animate-spin text-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
           :
-          <>
-            {bid.amount !== null ?
-              <>€{new Intl.NumberFormat().format(bid.amount)}</>
+          bid.isValid === false ?
+            <CircleX className="animate-in fade-in text-red-500" size={20} />
+            :
+            bid.amount === null ?
+              <BadgeX className="animate-in fade-in text-muted-foreground" size={20} />
               :
-              <>Niks</>
-            }
-            &nbsp;geboden door {BOTS[bid.player].owner}
-            {bid.comment &&
-              <>: "{bid.comment}"</>
-            }
-          </>
+              <BadgeEuro className="animate-in fade-in text-green-400" size={20} />
         }
-      </CardContent>
-    </Card>
+      </div>
+      <div className="flex-[0_0_120px] overflow-hidden text-ellipsis font-semibold">
+        {BOTS[bid.player].owner}
+      </div>
+      <div className="flex-[0_0_160px] overflow-hidden text-ellipsis">
+        {bid.isLoading ?
+          <Skeleton className={"h-[16px]"} style={{ width: bidSkeletonWidth + "px" }} />
+          :
+          <>€{new Intl.NumberFormat().format(bid.amount ?? 0)}</>
+        }
+      </div>
+      <div className="flex-1 overflow-hidden">
+        {bid.isLoading ?
+          <Skeleton className={"h-[16px]"} style={{ width: commentSkeletonWidth + "px" }} />
+          :
+          bid.comment !== null &&
+            <div className="text-sm mt-[4px]">
+              &ldquo;{bid.comment}&rdquo;
+            </div>
+        }
+      </div>
+    </div>
   )
 }

@@ -14,6 +14,7 @@ import { Switch } from './components/ui/switch';
 import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';
 import { BOTS } from './data/bots';
 import { RIDER_BIBS } from './data/riders';
+import { useWindowSize } from './lib/utils';
 import type { Bid, BotResponse, PlayerKey, Team } from './models/auction.models';
 import { auctionReducer } from './state/auction.reducer';
 import { initialState, type State } from './state/auction.state';
@@ -30,14 +31,15 @@ function App() {
   );
 
   const { theme } = useTheme()
+  const windowSize = useWindowSize();
   const [isTurboMode, setTurboMode] = useState(false)
   const [turboSpeed, setTurboSpeed] = useState("default")
   const nextRiderRef = useRef<HTMLButtonElement>(null)
 
   const TURBO_SPEEDS: { [label: string]: number } = {
-    "fast": 10,
-    "default": 500,
-    "slow": 1000
+    "fast": 100,
+    "default": 1000,
+    "slow": 3000
   }
 
   const startLot = async () => {
@@ -110,12 +112,16 @@ function App() {
 
       if ((bid.amount ?? 0) > currentBidder.moneyLeft ||
         ((bid.amount ?? 0) % 100_000 !== 0) ||
-        (bid.amount !== null && (bid.amount < (highestBid?.amount ?? 0) + 100_000))) {
+        (bid.amount !== null && bid.amount !== 0 && (bid.amount < (highestBid?.amount ?? 0) + 100_000))) {
         bid.isValid = false
       }
 
       if (bid.amount === 0) {
         bid.amount = null
+      }
+
+      if (bid.comment !== null && bid.comment?.length > 255) {
+        bid.comment = bid.comment?.substring(0, 255) + "..."
       }
 
       if (bid.isValid && bid.amount !== null) {
@@ -154,82 +160,90 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen">
-        <Header getSerializedState={getSerializedState} setState={setState} />
-        <div className="flex-1 px-8">
-          <Teams teams={state.teams}></Teams>
-          <div className="gap-16">
-            <div className="break-inside-avoid-column flex-1">
+      {(windowSize.height >= 1080 && windowSize.width >= 1080) ?
+        <>
+          <div className="flex flex-col h-screen overflow-hidden">
+            <Header getSerializedState={getSerializedState} setState={setState} />
+            <div className="flex-none px-8 pb-6">
+              <Teams teams={state.teams}></Teams>
+            </div>
+            <div className="flex-[1_0_0] px-8 overflow-hidden">
               {state.status === 'ongoing' && state.currentLot !== null &&
                 <Lot lot={state.currentLot} />
               }
             </div>
-          </div>
-        </div>
-        <Log items={state.log} />
-        <div className="sticky bottom-0 bg-background shadow-md">
-          <Separator className="bg-border data-[orientation=horizontal]:h-px" />
-          <div className="p-8">
-            <div>
-              <div className="flex items-center justify-between gap-8">
+            <Log items={state.log} />
+            <div className="sticky bottom-0 bg-background shadow-md">
+              <Separator className="bg-border h-px" />
+              <div className="px-8 py-6">
                 <div>
-                  <div className="flex-none flex items-center gap-12">
-                    <div className="text-right min-w-[160px]">
-                      {state.status === 'ongoing' &&
-                        <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => startLot()}>
-                          Volgende fietser
-                        </Button>
-                      }
-                      {state.status === 'done' &&
-                        <Button onClick={() => dispatch({ type: 'restart' })}>
-                          Even opnieuw hoor
-                        </Button>
-                      }
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm whitespace-nowrap">
-                        Snelheid
-                      </div>
-                      <ToggleGroup onValueChange={setTurboSpeed} defaultValue="default" type="single" variant="outline">
-                        <ToggleGroupItem value="fast">
-                          <Tablets size={16} />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="default">
-                          <Rabbit size={16} />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="slow">
-                          <Turtle size={16} />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <div className={`text-sm whitespace-nowrap ${isTurboMode ? '' : 'text-muted-foreground'}`}>
-                          T-t-turbo
+                  <div className="flex items-center justify-between gap-8">
+                    <div>
+                      <div className="flex-none flex items-center gap-12">
+                        <div className="text-right min-w-[160px]">
+                          {state.status === 'ongoing' &&
+                            <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => startLot()}>
+                              Volgende fietser
+                            </Button>
+                          }
+                          {state.status === 'done' &&
+                            <Button onClick={() => dispatch({ type: 'restart' })}>
+                              Even opnieuw hoor
+                            </Button>
+                          }
                         </div>
-                        <Switch
-                          checked={isTurboMode}
-                          onCheckedChange={setTurboMode}
-                        />
+                        <div className="flex items-center gap-2">
+                          <div className="text-sm whitespace-nowrap">
+                            Snelheid
+                          </div>
+                          <ToggleGroup onValueChange={setTurboSpeed} defaultValue="default" type="single" variant="outline">
+                            <ToggleGroupItem value="fast">
+                              <Tablets size={16} />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="default">
+                              <Rabbit size={16} />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="slow">
+                              <Turtle size={16} />
+                            </ToggleGroupItem>
+                          </ToggleGroup>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <div className={`text-sm whitespace-nowrap ${isTurboMode ? '' : 'text-muted-foreground'}`}>
+                              T-t-turbo
+                            </div>
+                            <Switch
+                              checked={isTurboMode}
+                              onCheckedChange={setTurboMode}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <AuctionInfo upcomingRiders={state.upcomingRiders} previousRiders={state.previousRiders}></AuctionInfo>
                   </div>
                 </div>
-                <AuctionInfo upcomingRiders={state.upcomingRiders} previousRiders={state.previousRiders}></AuctionInfo>
               </div>
             </div>
           </div>
+          <Toaster
+            richColors
+            position="top-center"
+            theme={
+              theme === "dark" ? "light" :
+                theme === "light" ? "dark" :
+                  (window.matchMedia("(prefers-color-scheme: dark)") ? "light" : "dark")
+            }
+          />
+        </>
+        :
+        <div className="h-screen w-screen flex items-center justify-center">
+          <span className="p-8 text-sm text-center text-muted-foreground">
+            Eh sorry je moet even een groter scherm kopen
+          </span>
         </div>
-      </div>
-      <Toaster
-        richColors
-        position="top-center"
-        theme={
-          theme === "dark" ? "light" :
-            theme === "light" ? "dark" :
-              (window.matchMedia("(prefers-color-scheme: dark)") ? "light" : "dark")
-        }
-      />
+      }
     </>
   )
 }

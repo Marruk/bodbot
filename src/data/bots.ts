@@ -41,6 +41,6 @@ export const BOTS: { [key: string]: Bot } = {
     owner: 'Niels',
     name: 'De gezelligstebiedbot',
     type: 'server',
-    endpoint: 'https://www.google.com'
+    endpoint: 'https://wielrenbots.beljaartmc.nl/bid'
   }
 }

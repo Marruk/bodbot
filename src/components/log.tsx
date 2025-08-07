@@ -13,7 +13,7 @@ export default function Log({ items }: { items: LogItem[] }) {
   }, [items])
 
   return (
-    <div ref={containerRef} className="scroll-smooth p-8 gap-4 flex overflow-x-scroll flex-row">
+    <div ref={containerRef} className="scroll-smooth px-8 py-6 gap-2 flex overflow-x-scroll flex-row">
       { items.map((item, index) => (
         <LogCard key={index} item={item} />
       ))}

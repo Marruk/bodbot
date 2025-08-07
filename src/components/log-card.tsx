@@ -103,7 +103,7 @@ export default function LogCard({ item }: { item: LogItem }) {
                       <Eye size={12} />
                     </div>
                   </SheetTrigger>
-                  <SheetContent className="max-h-screen overflow-y-scroll">
+                  <SheetContent className="sm:max-w-[800px] max-w-[800px] max-h-screen overflow-y-scroll">
                     <SheetHeader>
                       <SheetTitle className="text-lg font-semibold">
                         {item.rider}
@@ -113,7 +113,7 @@ export default function LogCard({ item }: { item: LogItem }) {
                       </SheetDescription>
                     </SheetHeader>
                     <div className="px-4 pb-4">
-                      <div className="flex flex-col-reverse gap-4">
+                      <div className="flex flex-col gap-4">
                         {item.allBids.map((bid, index) => (
                           <BidCard key={index} bid={bid} />
                         ))}
