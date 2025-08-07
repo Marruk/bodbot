@@ -72,7 +72,7 @@ export function auctionReducer(state: State, action: AuctionAction): State {
         currentLot: state.currentLot === null ? null : {
           ...state.currentLot,
           currentBidder: (state.currentLot.playerOrder.indexOf(action.bid.player) + 1) % state.currentLot.playerOrder.length,
-          winningBid: (currentWinningBid?.amount ?? 0) < (bid.amount ?? 0) ? bid : currentWinningBid,
+          winningBid: bid.isValid && (currentWinningBid?.amount ?? 0) < (bid.amount ?? 0) ? bid : currentWinningBid,
           allBids: [
             ...state.currentLot.allBids.slice(0, -1),
             bid

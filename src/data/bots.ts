@@ -36,11 +36,11 @@ export const BOTS: { [key: string]: Bot } = {
     type: 'script',
     code: mark
   },
-  'niels': {
-    key: 'niels',
-    owner: 'Niels',
-    name: 'De gezelligstebiedbot',
-    type: 'server',
-    endpoint: 'https://wielrenbots.beljaartmc.nl/bid'
-  }
+  // 'niels': {
+  //   key: 'niels',
+  //   owner: 'Niels',
+  //   name: 'De gezelligstebiedbot',
+  //   type: 'server',
+  //   endpoint: 'https://wielrenbots.beljaartmc.nl/bid'
+  // }
 }
