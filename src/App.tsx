@@ -97,7 +97,10 @@ function App() {
           previousRiders: previousRiders
         }
 
-        receivedBid = await currentBidder?.bot.code(bidInput.rider, bidInput.riderBib, bidInput.highestBid, bidInput.highestBidBy, bidInput.bids, bidInput.you, bidInput.others, bidInput.upcomingRiders, bidInput.previousRiders)
+        receivedBid = await Promise.race([
+          currentBidder?.bot.code(bidInput.rider, bidInput.riderBib, bidInput.highestBid, bidInput.highestBidBy, bidInput.bids, bidInput.you, bidInput.others, bidInput.upcomingRiders, bidInput.previousRiders),
+          new Promise<undefined>((resolve) => setTimeout(resolve, 5000))
+        ])
 
         bid.amount = receivedBid?.amount ?? null
         bid.comment = receivedBid?.comment ?? null
