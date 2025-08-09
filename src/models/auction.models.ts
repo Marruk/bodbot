@@ -32,9 +32,7 @@ export interface Bot {
   key: PlayerKey
   owner: string
   name: string
-  type: 'script' | 'server'
-  endpoint?: string,
-  code?: (
+  code: (
     rider: string,
     riderBib: number,
     highestBid: number | null,
@@ -63,7 +61,7 @@ export interface Bot {
     }[],
     upcomingRiders: string[],
     previousRiders: string[]
-  ) => BotResponse
+  ) => BotResponse | Promise<BotResponse>
 }
 
 export interface BotResponse {

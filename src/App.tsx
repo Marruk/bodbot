@@ -97,11 +97,7 @@ function App() {
           previousRiders: previousRiders
         }
 
-        if (currentBidder.bot.type === 'script' && currentBidder.bot.code !== undefined) {
-          receivedBid = currentBidder?.bot.code(bidInput.rider, bidInput.riderBib, bidInput.highestBid, bidInput.highestBidBy, bidInput.bids, bidInput.you, bidInput.others, bidInput.upcomingRiders, bidInput.previousRiders)
-        } else if (currentBidder.bot.type === 'server' && currentBidder.bot.endpoint !== undefined) {
-          receivedBid = await getBid(currentBidder.bot.endpoint, bidInput)
-        }
+        receivedBid = await currentBidder?.bot.code(bidInput.rider, bidInput.riderBib, bidInput.highestBid, bidInput.highestBidBy, bidInput.bids, bidInput.you, bidInput.others, bidInput.upcomingRiders, bidInput.previousRiders)
 
         bid.amount = receivedBid?.amount ?? null
         bid.comment = receivedBid?.comment ?? null
@@ -280,19 +276,5 @@ function shufflePlayerOrder(array: number[]) {
   }
 
   return array
-}
-
-function getBid(endpoint: string, bidInput: { rider: string; riderBib: number; highestBid: number | null; highestBidBy: PlayerKey; bids: { player: PlayerKey; amount: number; comment: string | null; }[]; you: { moneyLeft: number; riders: { name: string; amount: number; comment: string | null; }[]; }; others: Team[]; upcomingRiders: string[]; previousRiders: string[]; }): Promise<BotResponse> {
-  const headers: Headers = new Headers()
-  headers.set('Content-Type', 'application/json')
-  headers.set('Accept', 'application/json')
-
-  const request: RequestInfo = new Request(endpoint, {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(bidInput)
-  })
-
-  return fetch(request).then(response => response.json())
 }
 
