@@ -41,6 +41,15 @@ class PerfectBiddingAlgo {
     if (this.ridersWeReallyReallyWant.includes(rider)) {
       return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForReallyReally, you.moneyLeft), comment: "deze wil ik echt, maar echt"};
     }
+
+    if (previousRiders.length < 40) {
+      return {amount: null, comment: "too soon"};
+    }
+
+    if (this.numberOfRidersNotBoughtByOthersInARow < 3) {
+      return {amount: null, comment: "tis me nu even te duur"};
+    }
+
     if (this.ridersWeReallyWant.includes(rider)) {
       return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForReally, you.moneyLeft), comment: "deze wil ik echt"};
     }
