@@ -35,11 +35,20 @@ class PerfectBiddingAlgo {
   determinePerfectBid(
       rider: string, riderBib: number, highestBid: number | null, highestBidBy: PlayerKey | null, bids: BodBy[], you: Player, others: Player[], upcomingRiders: string[], previousRiders: string[]
   ): BotResponse {
+    if (upcomingRiders.length === 1) {
+      return {amount: you.moneyLeft, comment: "Ok er is iets mis gegaan"};
+    }
+
     if (this.ridersWeDontWant.includes(rider)) {
       return {amount: null, comment: "Als je deze koopt ben je gek"};
     }
+
     if (this.ridersWeReallyReallyWant.includes(rider)) {
       return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForReallyReally, you.moneyLeft), comment: "deze wil ik echt, maar echt"};
+    }
+
+    if (this.ridersWeReallyWant.includes(rider)) {
+      return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForReally, you.moneyLeft), comment: "deze wil ik echt"};
     }
 
     if (previousRiders.length < 40) {
@@ -50,14 +59,24 @@ class PerfectBiddingAlgo {
       return {amount: null, comment: "tis me nu even te duur"};
     }
 
-    if (this.ridersWeReallyWant.includes(rider)) {
-      return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForReally, you.moneyLeft), comment: "deze wil ik echt"};
-    }
     if (this.ridersWeWant.includes(rider)) {
       return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForWant, you.moneyLeft), comment: "deze wil ik wel"};
     }
+
+    if (previousRiders.length < upcomingRiders.length) {
+      return {amount: null, comment: "nog geen reden voor paniek"};
+    }
+
     if (this.ridersWeMaybeWant.includes(rider)) {
       return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForMaybeWant, you.moneyLeft), comment: "ik neem em wel"};
+    }
+
+    if (upcomingRiders.length < 15) {
+      return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForMaybeWant, you.moneyLeft), comment: "lichte paniek"}
+    }
+
+    if (upcomingRiders.length <= 8 - you.riders.length) {
+      return {amount: this.tonnetjeMeer(highestBid, this.maxPriceForWant, you.moneyLeft), comment: "PANIEK"}
     }
 
     return {amount: null, comment: "wie?"};
