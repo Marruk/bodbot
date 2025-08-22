@@ -1,50 +1,133 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import type { PlayerKey } from "@/models/auction.models"
 
-// wordt alleen aangeroepen als:
-// - je team niet vol is
-// - je meer geld hebt dan het laatste hoogste bod
-// - je niet het hoogste bod hebt
-// komt eigenlijk gewoon neer als het nog zin heeft om een bod te doen dus ja
+type RiderValueMap = Record<string, number>
 
-export default function bot(
-  rider: string, // naam zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical
-  riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical (-1 als het niet bekend is)
-  highestBid: number | null, // hoogste bod, is nooit van jou
-  highestBidBy: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | null, // hoogste bod persoon
-  bids: { // alle boden (in oplopende volgorde), inclusief die van jou
-    player: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran', // naam
-    amount: number, // geboden bedrag
-    comment: string | null, // leuk berichtje
-  }[],
-  you: {
-    moneyLeft: number, // hoeveel geld je nog hebt (huidige bod is er niet afgehaald)
-    riders: { // wie je al in je team hebt
-      name: string, // fietser
-      amount: number, // prijs
-      comment: string | null // leuk berichtje
+const FAVORITES: RiderValueMap = {
+  "VINGEGAARD Jonas": 9_800_000,
+  "ALMEIDA João": 8_000_000,
+  "AYUSO Juan": 7_500_000,
+  "TIBERI Antonio": 5_000_000,
+  "CICCONE Giulio": 6_500_000,
+  "GALL Felix": 6_800_000,
+  "GAUDU David": 6_500_000,
+  "BERNAL Egan": 5_000_000,
+  "PIDCOCK Tom": 6_000_000,
+  "KUSS Sepp": 5_500_000,
+  "GROENEWEGEN Dylan": 7_000_000,
+  "PHILIPSEN Jasper": 7_500_000,
+}
+
+const OUTSIDERS: RiderValueMap = {
+  "DE GENDT Thomas": 3_500_000,
+  "POELS Wout": 3_200_000,
+  "MAS Enric": 5_800_000,
+  "THOMAS Geraint": 5_500_000,
+  "LANDA Mikel": 5_200_000,
+  "O'CONNOR Ben": 5_000_000,
+  "CARTHY Hugh": 4_500_000,
+  "BUITRAGO Santiago": 4_800_000,
+  "EVENEPOEL Remco": 9_000_000,
+  "KELDERMAN Wilco": 4_000_000,
+  "HAIG Jack": 4_200_000,
+  "CARUSO Damiano": 4_000_000,
+  "SOLER Marc": 3_800_000,
+  "ROGLIČ Primož": 8_000_000,
+  "BARDET Romain": 4_200_000,
+}
+
+const DEFAULT_VALUE = 2_000_000
+
+export default async function bot(
+    rider: string,
+    riderBib: number,
+    highestBid: number | null,
+    highestBidBy: PlayerKey | null,
+    bids: {
+      player: PlayerKey | null,
+      amount: number,
+      comment: string | null,
     }[],
-  },
-  others: { // de rest, jij komt hier niet voor
-    key: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran', // iedereen die meedoet
-    moneyLeft: number, // hoeveel geld ze nog hebben
-    riders: { // wie ze al in hun team hebben
-      name: string, // fietser
-      amount: number, // prijs
-      comment: string | null // leuk berichtje
+    you: {
+      moneyLeft: number,
+      riders: {
+        name: string,
+        amount: number,
+        comment: string | null
+      }[],
+    },
+    others: {
+      key: PlayerKey,
+      moneyLeft: number,
+      riders: {
+        name: string,
+        amount: number,
+        comment: string | null
+      }[],
     }[],
-  }[],
-  upcomingRiders: string[], // wie er nog komen in alfabetische volgorde (exclusief huidige)
-  previousRiders: string[] // wie er al zijn geweest in alfabetische volgorde (exclusief huidige)
-): {
-  amount: number | null, // hoeveel je wil bieden, moet deelbaar zijn door een ton
-  comment: string | null // leuk berichtje doe iedereen de groeten
-} {
-  const randomAmount = (highestBid ?? 0) + (100000 * Math.round(Math.random() * 5 + 1))
+    upcomingRiders: string[],
+    previousRiders: string[]
+): Promise<{
+  amount: number | null,
+  comment: string | null
+}> {
+  const currentBid = highestBid ?? 0
+  const isFavorite = rider in FAVORITES
+  const isOutsider = rider in OUTSIDERS
 
-  const doBid = Math.random() < 0.5
+  const ridersLeft = upcomingRiders.length + 1
 
-  return {
-    amount: doBid ? Math.min(you.moneyLeft, randomAmount) : null,
-    comment: doBid ? "ok dit is echt mijn laatste bod" : "deze hoef ik niet"
+  if (isFavorite) {
+    const baseValue = FAVORITES[rider]
+    const chaosFactor = 0.9 + Math.random() * 0.3
+    const maxPrice = baseValue * chaosFactor
+
+    if (currentBid < maxPrice && you.moneyLeft > currentBid) {
+      const increment = 100_000 * (1 + Math.floor(Math.random() * 3))
+      const bid = Math.min(you.moneyLeft, currentBid + increment)
+      return {
+        amount: bid,
+        comment: "🪿MINE MINE MINE 🪿"
+      }
+    }
+    return { amount: null, comment: "Veeeeelste duur joh!" }
   }
+
+  if (isOutsider) {
+    if (ridersLeft > 50) {
+      return { amount: null, comment: "Zou hem zo maar kunnen worden, maar ik wacht nog even af." }
+    }
+
+    const baseValue = OUTSIDERS[rider]
+    const chaosFactor = 0.9 + Math.random() * 0.3
+    const maxPrice = baseValue * chaosFactor
+
+    if (currentBid < maxPrice && you.moneyLeft > currentBid) {
+      const increment = 100_000 * (1 + Math.floor(Math.random() * 3))
+      const bid = Math.min(you.moneyLeft, currentBid + increment)
+      return {
+        amount: bid,
+        comment: "Deze gaat winnen!"
+      }
+    }
+    return { amount: null, comment: "Laat maar joh!" }
+  }
+
+  if (ridersLeft > 20) {
+    return { amount: null, comment: "Wie is dit dan joh?" }
+  }
+
+  const baseValue = DEFAULT_VALUE
+  const chaosFactor = 0.9 + Math.random() * 0.3
+  const maxPrice = baseValue * chaosFactor
+
+  if (currentBid < maxPrice && you.moneyLeft > currentBid) {
+    const increment = 100_000 * (1 + Math.floor(Math.random() * 3))
+    const bid = Math.min(you.moneyLeft, currentBid + increment)
+    return {
+      amount: bid,
+      comment: "Koopje!"
+    }
+  }
+
+  return { amount: null, comment: "Wie is dit dan joh?" }
 }
