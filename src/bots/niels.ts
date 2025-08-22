@@ -4,13 +4,15 @@
 // - je niet het hoogste bod hebt
 // komt eigenlijk gewoon neer als het nog zin heeft om een bod te doen dus ja
 
+import type { PlayerKey } from "@/models/auction.models"
+
 export default async function bot(
   rider: string, // naam zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical
   riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical (-1 als het niet bekend is)
   highestBid: number | null, // hoogste bod, is nooit van jou
-  highestBidBy: 'tadej' | 'jonas' | 'daan' | 'mark' | 'niels' | null, // hoogste bod persoon
+  highestBidBy: PlayerKey | null, // hoogste bod persoon
   bids: { // alle boden (in oplopende volgorde), inclusief die van jou
-    player: 'tadej' | 'jonas' | 'daan' | 'mark' | 'niels', // naam
+    player: PlayerKey, // naam
     amount: number, // geboden bedrag
     comment: string | null, // leuk berichtje
   }[],
@@ -23,7 +25,7 @@ export default async function bot(
     }[],
   },
   others: { // de rest, jij komt hier niet voor
-    key: 'jonas' | 'tadej' | 'daan' | 'mark' | 'niels', // iedereen die meedoet
+    key: PlayerKey, // iedereen die meedoet
     moneyLeft: number, // hoeveel geld ze nog hebben
     riders: { // wie ze al in hun team hebben
       name: string, // fietser
