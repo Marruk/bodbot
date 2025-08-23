@@ -30,9 +30,9 @@ export default function LogCard({ item }: { item: LogItem }) {
   }
 
   return (
-    <Card ref={elementRef} className="flex-none w-[240px] animate-in zoom-in-90 fade-in slide-in-from-bottom">
+    <Card ref={elementRef} className="flex-none w-[15rem] animate-in zoom-in-90 fade-in slide-in-from-bottom">
       <CardContent>
-        <div className="flex flex-col h-[120px] overflow-hidden">
+        <div className="flex flex-col h-[7.5rem] overflow-hidden">
           <div className="flex-none overflow-hidden flex gap-4">
             <div className="overflow-hidden text-ellipsis flex-1 text-sm font-bold whitespace-nowrap">
               {item.type === 'AUCTION_STARTED' &&
@@ -103,7 +103,7 @@ export default function LogCard({ item }: { item: LogItem }) {
                       <Eye size={12} />
                     </div>
                   </SheetTrigger>
-                  <SheetContent className="sm:max-w-[800px] max-w-[800px] max-h-screen overflow-y-scroll">
+                  <SheetContent className="max-w-[50rem] max-h-screen overflow-y-scroll">
                     <SheetHeader>
                       <SheetTitle className="text-lg font-semibold">
                         {item.rider}

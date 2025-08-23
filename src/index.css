@@ -122,3 +122,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media only screen and (max-width: 1080px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  :root {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-height: 1080px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-height: 800px) {
+  :root {
+    font-size: 12px;
+  }
+}

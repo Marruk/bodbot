@@ -159,7 +159,7 @@ function App() {
 
   return (
     <>
-      {(windowSize.height >= 1080 && windowSize.width >= 1080) ?
+      {(windowSize.height >= 640 && windowSize.width >= 640) ?
         <>
           <div className="flex flex-col h-screen overflow-hidden">
             <Header getSerializedState={getSerializedState} setState={setState} />
@@ -179,7 +179,7 @@ function App() {
                   <div className="flex items-center justify-between gap-8">
                     <div>
                       <div className="flex-none flex items-center gap-12">
-                        <div className="text-right min-w-[160px]">
+                        <div className="text-right min-w-[10rem]">
                           {state.status === 'ongoing' &&
                             <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => startLot()}>
                               Volgende fietser

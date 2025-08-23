@@ -35,9 +35,9 @@ export default function Header({ getSerializedState, setState }: { getSerialized
       <div className="px-8 py-6">
         <div>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 overflow-hidden">
               <Bike />
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-2xl font-bold whitespace-nowrap text-ellipsis overflow-hidden">
                 Lekker veilen zonder met elkaar te hoeven praten
               </h1>
             </div>
@@ -53,7 +53,7 @@ export default function Header({ getSerializedState, setState }: { getSerialized
                       Importeer tsjak
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
+                  <DialogContent className="sm:max-w-[25rem]">
                     <DialogHeader>
                       <DialogTitle>Importeer tsjak</DialogTitle>
                     </DialogHeader>

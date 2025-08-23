@@ -7,9 +7,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 export default function Teams({ teams }: { teams: Team[] }) {
   return (
     <>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(13.5rem,1fr))] gap-2">
         {teams.map(team => (
-          <Card className="max-w-[320px]" key={team.key}>
+          <Card className="max-w-[20rem]" key={team.key}>
             <CardHeader className="border-b">
               <div className="flex items-center justify-between">
                 <CardTitle>{team.bot.owner}</CardTitle>
