@@ -35,12 +35,12 @@ export const BOTS: { [key: string]: Bot } = {
     name: 'Lekker Fietsen',
     code: mark
   },
-  // 'niels': {
-  //   key: 'niels',
-  //   owner: 'Niels',
-  //   name: 'De gezelligstebiedbot',
-  //   code: niels
-  // },
+  'niels': {
+    key: 'niels',
+    owner: 'Niels',
+    name: 'De gezelligstebiedbot',
+    code: niels
+  },
   'lucas': {
     key: 'lucas',
     owner: 'Lucas',
