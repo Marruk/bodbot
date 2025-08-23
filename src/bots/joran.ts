@@ -1,50 +1,213 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import type { PlayerKey } from "@/models/auction.models"
 
-// wordt alleen aangeroepen als:
-// - je team niet vol is
-// - je meer geld hebt dan het laatste hoogste bod
-// - je niet het hoogste bod hebt
-// komt eigenlijk gewoon neer als het nog zin heeft om een bod te doen dus ja
-
-export default function bot(
-  rider: string, // naam zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical
-  riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical (-1 als het niet bekend is)
-  highestBid: number | null, // hoogste bod, is nooit van jou
-  highestBidBy: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | null, // hoogste bod persoon
-  bids: { // alle boden (in oplopende volgorde), inclusief die van jou
-    player: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran', // naam
-    amount: number, // geboden bedrag
-    comment: string | null, // leuk berichtje
+export default async function bot(
+  rider: string,
+  riderBib: number,
+  highestBid: number | null,
+  highestBidBy: PlayerKey | null,
+  bids: {
+    player: PlayerKey | null
+    amount: number
+    comment: string | null
   }[],
   you: {
-    moneyLeft: number, // hoeveel geld je nog hebt (huidige bod is er niet afgehaald)
-    riders: { // wie je al in je team hebt
-      name: string, // fietser
-      amount: number, // prijs
-      comment: string | null // leuk berichtje
-    }[],
+    moneyLeft: number
+    riders: {
+      name: string
+      amount: number
+      comment: string | null
+    }[]
   },
-  others: { // de rest, jij komt hier niet voor
-    key: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran', // iedereen die meedoet
-    moneyLeft: number, // hoeveel geld ze nog hebben
-    riders: { // wie ze al in hun team hebben
-      name: string, // fietser
-      amount: number, // prijs
-      comment: string | null // leuk berichtje
-    }[],
+  others: {
+    key: PlayerKey
+    moneyLeft: number
+    riders: {
+      name: string
+      amount: number
+      comment: string | null
+    }[]
   }[],
-  upcomingRiders: string[], // wie er nog komen in alfabetische volgorde (exclusief huidige)
-  previousRiders: string[] // wie er al zijn geweest in alfabetische volgorde (exclusief huidige)
-): {
-  amount: number | null, // hoeveel je wil bieden, moet deelbaar zijn door een ton
-  comment: string | null // leuk berichtje doe iedereen de groeten
-} {
-  const randomAmount = (highestBid ?? 0) + (100000 * Math.round(Math.random() * 5 + 1))
+  upcomingRiders: string[],
+  previousRiders: string[]
+): Promise<{
+  amount: number | null
+  comment: string | null
+}> {
+  let sensibleAmount = findRiderInKooplijst(rider, riderBib)?.maxAmount
 
-  const doBid = Math.random() < 0.5
-
-  return {
-    amount: doBid ? Math.min(you.moneyLeft, randomAmount) : null,
-    comment: doBid ? "ok dit is echt mijn laatste bod" : "deze hoef ik niet"
+  if (sensibleAmount > you.moneyLeft) {
+    sensibleAmount = you.moneyLeft
   }
+
+  if (sensibleAmount) {
+    if (!highestBid) {
+      return { amount: 100_000, comment: "Tonnetje" }
+    }
+    if (sensibleAmount === highestBid + 100_000) {
+      return {
+        amount: highestBid + 100_000,
+        comment: "Oké laatste bod",
+      }
+    }
+    if (sensibleAmount > highestBid + 500_000) {
+      return {
+        amount: highestBid + 300_000,
+        comment: "Hé bikkels, niet zo laf doen",
+      }
+    }
+    if (sensibleAmount < highestBid + 100_000) {
+      return { amount: null, comment: `Dit wordt mij te ${randomLafwoord()}` }
+    }
+  }
+
+  if (Math.floor(Math.random() * 100) === 88) {
+    return {
+      amount: you.moneyLeft,
+      comment: `Ik heb mijn geluksgetal gegooid dus ik doe alles op deze nono`,
+    }
+  }
+
+  if (highestBidBy === "mark" && you.moneyLeft > highestBid) {
+    return {
+      amount: highestBid + 100_000,
+      comment: `Hee Markie wil je deze? Nou, ik doe nog een tonnetje`,
+    }
+  }
+
+  // Paniekcheck 1
+  if (upcomingRiders.length < (8 - you.riders.length) * 5) {
+    return {
+      amount: highestBid ? highestBid + 100_000 : 100_000,
+      comment: `Ik moet wel iets gaan kopen nu`,
+    }
+  }
+
+  // Paniekcheck 2
+  if (upcomingRiders.length < (8 - you.riders.length) * 2) {
+    return {
+      amount: highestBid ? highestBid + 100_000 : 100_000,
+      comment: `Godver ik heb nog niemand dan maar deze kneus`,
+    }
+  }
+
+  return { amount: null, comment: `Nein man` }
+}
+
+function findRiderInKooplijst(
+  riderName: string,
+  riderBib: number
+): Toprenner | undefined {
+  const riderByName = kooplijst.find((rider) => {
+    return riderName.toLowerCase().includes(rider.name)
+  })
+
+  if (riderByName) {
+    return riderByName
+  }
+
+  const riderByBib = kooplijst.find((rider) => rider.riderBib === riderBib)
+
+  if (riderByBib) {
+    return riderByBib
+  }
+}
+
+type Toprenner = {
+  name: string
+  riderBib: number
+  maxAmount: number
+}
+
+const kooplijst: Toprenner[] = [
+  {
+    name: "pidcock",
+    riderBib: 111,
+    maxAmount: 1_000_000,
+  },
+  {
+    name: "soler",
+    riderBib: 7,
+    maxAmount: 500_000,
+  },
+  {
+    name: "ayuso",
+    riderBib: 2,
+    maxAmount: 4_900_000,
+  },
+  {
+    name: "landa",
+    riderBib: 51,
+    maxAmount: 500_000,
+  },
+  {
+    name: "meintjes",
+    riderBib: 185,
+    maxAmount: 100_000,
+  },
+  {
+    name: "pedersen",
+    riderBib: 27,
+    maxAmount: 4_000_000,
+  },
+  {
+    name: "almeida",
+    riderBib: 1,
+    maxAmount: 4_000_000,
+  },
+  {
+    name: "vingegaard",
+    riderBib: 11,
+    maxAmount: 9_000_000,
+  },
+  {
+    name: "philipsen",
+    riderBib: 71,
+    maxAmount: 3_000_000,
+  },
+  {
+    name: "gall",
+    riderBib: 91,
+    maxAmount: 2_000_000,
+  },
+  {
+    name: "tiberi",
+    riderBib: 101,
+    maxAmount: 1_500_000,
+  },
+  {
+    name: "pellizari",
+    riderBib: 45,
+    maxAmount: 1_500_000,
+  },
+  {
+    name: "ciccone",
+    riderBib: 23,
+    maxAmount: 1_000_000,
+  },
+  {
+    name: "o'connor",
+    riderBib: 151,
+    maxAmount: 2_500_000,
+  },
+  {
+    name: "bernal",
+    riderBib: 62,
+    maxAmount: 800_000,
+  },
+]
+
+const laffeCommentsWoorden = [
+  "duur",
+  "gortig",
+  "idioot",
+  "prijzig",
+  "gek",
+  "mal",
+  "krankzinnig",
+  "expensivo",
+]
+
+function randomLafwoord() {
+  const index = Math.floor(Math.random() * laffeCommentsWoorden.length)
+  return laffeCommentsWoorden[index] ?? "teuer"
 }
