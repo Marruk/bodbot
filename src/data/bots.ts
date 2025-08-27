@@ -5,7 +5,7 @@ import niels from "../bots/niels"
 import jonas from "../bots/jonas"
 import daan from "../bots/daan"
 import lucas from "../bots/lucas"
-import hannah from "../bots/hannah"
+import hannah from "../bots/hannah/hannah.ts"
 import joran from "../bots/joran"
 
 import type { Bot } from "../models/auction.models"
