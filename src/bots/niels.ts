@@ -39,7 +39,7 @@ export default async function bot(
   amount: number | null, // hoeveel je wil bieden, moet deelbaar zijn door een ton
   comment: string | null // leuk berichtje doe iedereen de groeten
 }> {
-  const endpoint = 'https://wielrenbots.beljaartmc.nl/bid'
+  const endpoint = 'https://wielrenbots.beljaartmc.nl/bidtest'
 
   const headers: Headers = new Headers()
   headers.set('Content-Type', 'application/json')

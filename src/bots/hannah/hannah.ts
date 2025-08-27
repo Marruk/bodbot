@@ -57,8 +57,8 @@ function getBid(
   const nextBid = highestBid + 100000;
   const maxBid = getMaxBid(rider);
   if (
-    panicLevel === "low" ||
-    (panicLevel === "medium" && isBudgetRider(rider))
+    (panicLevel === "low" ||
+    panicLevel === "medium") && isBudgetRider(rider)
   ) {
     return null;
   }
