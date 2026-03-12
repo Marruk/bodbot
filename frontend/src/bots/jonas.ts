@@ -39,19 +39,19 @@ export default function bot(
     name: string // naam
     nationality: string // land code (twee letters)
     birthdate: string // gewoon lekker in een string: YYYY-MM-DD
-    place_of_birth: string | null // mooie plek
+    placeOfBirth: string | null // mooie plek
     height: number | null // lengte in meter
     weight: number | null  // zwaarte in kilogram
-    image_url: string | null // leuk kiekje
-    points_per_speciality: { // PCS punten, spreekt voor zich
-      one_day_races: number,
+    imageUrl: string | null // leuk kiekje
+    pointsPerSpeciality: { // PCS punten, spreekt voor zich
+      oneDayRaces: number,
       gc: number,
-      time_trial: number,
+      timeTrial: number,
       sprint: number,
       climber: number,
       hills: number,
     },
-    points_per_season_history: { // punten per seizoen
+    pointsPerSeasonHistory: { // punten per seizoen
       season: number, // jaartal
       points: number, // aantal punten
       rank: number, // ranking van dat jaar

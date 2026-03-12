@@ -25,12 +25,15 @@ def get_rider(rider_slug: str):
             "name": rider.name(),
             "nationality": rider.nationality(),
             "birthdate": rider.birthdate(),
-            "place_of_birth": rider.place_of_birth(),
+            "placeOfBirth": rider.place_of_birth(),
             "height": rider.height(),
             "weight": rider.weight(),
-            "image_url": rider.image_url(),
-            "points_per_speciality": rider.points_per_speciality(),
-            "points_per_season_history": rider.points_per_season_history(),
+            "imageUrl": rider.image_url(),
+            "pointsPerSpeciality": {
+                k.replace("one_day_races", "oneDayRaces").replace("time_trial", "timeTrial"): v
+                for k, v in (rider.points_per_speciality() or {}).items()
+            },
+            "pointsPerSeasonHistory": rider.points_per_season_history(),
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

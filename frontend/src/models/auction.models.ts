@@ -75,19 +75,19 @@ export interface RiderInfo {
   name: string
   nationality: string
   birthdate: string
-  place_of_birth: string | null
+  placeOfBirth: string | null
   height: number | null
   weight: number | null
-  image_url: string | null
-  points_per_speciality: {
-    one_day_races: number,
+  imageUrl: string | null
+  pointsPerSpeciality: {
+    oneDayRaces: number,
     gc: number,
-    time_trial: number,
+    timeTrial: number,
     sprint: number,
     climber: number,
     hills: number,
   }
-  points_per_season_history: {
+  pointsPerSeasonHistory: {
     season: number
     points: number
     rank: number

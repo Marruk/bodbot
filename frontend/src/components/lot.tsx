@@ -37,14 +37,14 @@ export default function Lot({ lot }: { lot: Lot }) {
             {lot.riderInfo?.nationality && <img className="border-1 w-8 rounded-sm" src={`https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/${lot.riderInfo?.nationality.toLowerCase()}.svg`} /> }
           </div>
           <div className="flex items-center gap-4">
-            { lot.riderInfo?.image_url &&
-              <img className="border-1 w-20 rounded-lg shadow-md" src={`https://www.procyclingstats.com/${lot.riderInfo.image_url}`} />
+            { lot.riderInfo?.imageUrl &&
+              <img className="border-1 w-20 rounded-lg shadow-md" src={`https://www.procyclingstats.com/${lot.riderInfo.imageUrl}`} />
             }
             <div>
               <div className="text-sm text-muted-foreground flex flex-col gap-1">
-                { lot.riderInfo?.place_of_birth &&
+                { lot.riderInfo?.placeOfBirth &&
                   <>
-                    Geboren in het {birthplaceConnector} {lot.riderInfo.place_of_birth}
+                    Geboren in het {birthplaceConnector} {lot.riderInfo.placeOfBirth}
                   </>
                 }
                 { lot.riderInfo &&
@@ -55,18 +55,18 @@ export default function Lot({ lot }: { lot: Lot }) {
                   </div>
                 }
               </div>
-              {lot.riderInfo?.points_per_speciality &&
+              {lot.riderInfo?.pointsPerSpeciality &&
                 <div className="text-xs mt-4 grid grid-cols-3 gap-x-4 gap-y-2">
                   {
                     [
-                      { class: 'oneday', property: 'one_day_races' as const, label: 'One day races', color: '#A0D54C' },
+                      { class: 'oneday', property: 'oneDayRaces' as const, label: 'One day races', color: '#A0D54C' },
                       { class: 'gc', property: 'gc' as const, label: 'Gc', color: '#F42A0E' },
-                      { class: 'tt', property: 'time_trial' as const, label: 'Time trial', color: '#5DA9EF' },
+                      { class: 'tt', property: 'timeTrial' as const, label: 'Time trial', color: '#5DA9EF' },
                       { class: 'sprint', property: 'sprint' as const, label: 'Sprint', color: '#FFAD4E' },
                       { class: 'climber', property: 'climber' as const, label: 'Climber', color: '#aa3df2' },
                       { class: 'hills', property: 'hills' as const, label: 'Hills', color: '#ff64d3' }
                     ].map((specialty) => {
-                      const speciality = lot.riderInfo!.points_per_speciality!
+                      const speciality = lot.riderInfo!.pointsPerSpeciality!
                       const points = speciality[specialty.property]
                       const maxSpecialtyPoints = Math.max(...Object.values(speciality).filter((v): v is number => v !== null))
 

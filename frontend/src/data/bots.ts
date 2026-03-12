@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // @ts-expect-error "javascript noob"
 import tadej from "../bots/tadej"
 import mark from "../bots/mark.ts"
