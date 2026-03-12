@@ -73,7 +73,7 @@ export default function LogCard({ item }: { item: LogItem }) {
                 {item.winningBid !== null &&
                   <>
                     <div className="overflow-hidden flex-none text-sm mt-2">
-                      {BOTS[item.winningBid.player].owner} <span className="text-muted-foreground">voor</span> €{new Intl.NumberFormat().format(item.winningBid.amount ?? 0)}
+                      <span className="capitalize">{BOTS[item.winningBid.player]?.owner ?? item.winningBid.player}</span> <span className="text-muted-foreground">voor</span> €{new Intl.NumberFormat().format(item.winningBid.amount ?? 0)}
                       {item.winningBid.comment &&
                         <>:</>
                       }

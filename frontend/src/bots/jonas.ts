@@ -40,6 +40,7 @@ export default function bot(
     nationality: string // land code (twee letters)
     birthdate: string // gewoon lekker in een string: YYYY-MM-DD
     placeOfBirth: string | null // mooie plek
+    currentTeam: string | null // lekker voor het teamgevoel
     height: number | null // lengte in meter
     weight: number | null  // zwaarte in kilogram
     imageUrl: string | null // leuk kiekje

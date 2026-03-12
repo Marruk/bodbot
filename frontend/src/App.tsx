@@ -1,6 +1,6 @@
 import { Separator } from '@radix-ui/react-separator';
 import { Rabbit, Tablets, Turtle } from 'lucide-react';
-import { useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { Toaster } from 'sonner';
 import './App.css';
 import AuctionInfo from './components/auction-info';
@@ -14,8 +14,7 @@ import { Spinner } from './components/ui/spinner';
 import { Switch } from './components/ui/switch';
 import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';
 import { BOTS } from './data/bots';
-import { RIDER_BIBS } from './data/riders';
-import { riderNameToPcsUrl, useWindowSize } from './lib/utils';
+import { useWindowSize } from './lib/utils';
 import type { Bid, BotResponse, PlayerKey, RiderInfo, Team } from './models/auction.models';
 import { auctionReducer } from './state/auction.reducer';
 import { initialState, type State } from './state/auction.state';
@@ -38,6 +37,13 @@ function App() {
   const [turboSpeed, setTurboSpeed] = useState("default")
   const nextRiderRef = useRef<HTMLButtonElement>(null)
 
+  useEffect(() => {
+    fetch('http://localhost:8000/startlist/giro-d-italia/2026')
+      .then(r => r.json())
+      .then(riders => dispatch({ type: 'set-startlist', riders }))
+      .catch(() => {})
+  }, [])
+
   const TURBO_SPEEDS: { [label: string]: number } = {
     "fast": 100,
     "default": 1000,
@@ -46,7 +52,7 @@ function App() {
 
   const startLot = async () => {
     setIsLoadingRider(true)
-    const { rider, riderInfo, playerOrder, players, upcomingRiders, previousRiders,  } = await prepareLotData(state)
+    const { rider, riderBib, riderInfo, playerOrder, players, upcomingRiders, previousRiders } = await prepareLotData(state, isTurboMode)
     setIsLoadingRider(false)
 
     dispatch({ type: 'lot-start', rider, riderInfo, playerOrder })
@@ -84,7 +90,7 @@ function App() {
 
         const bidInput = {
           rider: rider,
-          riderBib: RIDER_BIBS[rider] ?? -1,
+          riderBib: riderBib,
           highestBid: highestBid?.amount ?? null,
           highestBidBy: highestBid?.player ?? null,
           bids: bids.filter(bid => bid.amount !== null).map(bid => ({
@@ -257,7 +263,7 @@ function App() {
 
 export default App
 
-async function prepareLotData(state: State): Promise<{ rider: string, riderInfo: RiderInfo | null, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[] }> {
+async function prepareLotData(state: State, isTurboMode: boolean): Promise<{ rider: string, riderBib: number, riderInfo: RiderInfo | null, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[] }> {
   const randomRiderIndex = Math.floor(Math.random() * (state.upcomingRiders.length - 1))
   const rider = state.upcomingRiders[randomRiderIndex]
   const randomOrder = shufflePlayerOrder(Array(state.teams.length).fill(0).map((_, i) => i))
@@ -266,17 +272,21 @@ async function prepareLotData(state: State): Promise<{ rider: string, riderInfo:
   const upcomingRiders = [...state.upcomingRiders]
   upcomingRiders.splice(randomRiderIndex, 1)
 
+  const riderStartListEntry = state.startlist.find(r => r.name === rider)
   let riderInfo: RiderInfo | null = null
-  try {
-    const slug = riderNameToPcsUrl(rider).replace('rider/', '')
-    const res = await fetch(`http://localhost:8000/rider/${slug}`)
-    if (res.ok) riderInfo = await res.json()
-  } catch {
-    // fail silently
+
+  if (riderStartListEntry !== undefined && !isTurboMode) {
+    try {
+      const res = await fetch(`http://localhost:8000/${riderStartListEntry.url}`)
+      if (res.ok) riderInfo = await res.json()
+    } catch {
+      // fail silently
+    }
   }
 
   return {
     rider,
+    riderBib: riderStartListEntry?.bib ?? -1,
     riderInfo,
     playerOrder: randomPlayerOrder,
     players: state.teams,

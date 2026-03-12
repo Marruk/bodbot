@@ -12,7 +12,7 @@ export default function Teams({ teams }: { teams: Team[] }) {
           <Card className="max-w-[20rem]" key={team.key}>
             <CardHeader className="border-b">
               <div className="flex items-center justify-between">
-                <CardTitle>{team.bot.owner}</CardTitle>
+                <CardTitle className="capitalize">{team.bot?.owner ?? team.key}</CardTitle>
                 <div className="text-sm">
                   <Money amount={team.moneyLeft} />
                 </div>

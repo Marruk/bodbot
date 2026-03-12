@@ -1,5 +1,14 @@
 export type PlayerKey = 'daan' | 'mark' | 'niels' | 'hannah' | 'joran' | 'lucas' | 'jonas' | 'tadej'
 
+export interface StartListEntry {
+  name: string
+  bib: number
+  url: string
+  nationality: string
+  teamName: string
+  teamUrl: string
+}
+
 export interface Team {
   key: PlayerKey,
   bot: Bot,
@@ -76,6 +85,7 @@ export interface RiderInfo {
   nationality: string
   birthdate: string
   placeOfBirth: string | null
+  currentTeam: string | null
   height: number | null
   weight: number | null
   imageUrl: string | null

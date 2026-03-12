@@ -1,4 +1,4 @@
-import type { Bid, RiderInfo } from "@/models/auction.models";
+import type { Bid, RiderInfo, StartListEntry } from "@/models/auction.models";
 import type { State } from "./auction.state";
 
 export type AuctionAction = {
@@ -23,4 +23,7 @@ export type AuctionAction = {
 } | {
   type: 'import-state',
   state: State
+} | {
+  type: 'set-startlist',
+  riders: StartListEntry[]
 };

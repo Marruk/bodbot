@@ -131,6 +131,13 @@ export function auctionReducer(state: State, action: AuctionAction): State {
         ]
       }
     }
+    case 'set-startlist': {
+      return {
+        ...state,
+        startlist: action.riders,
+        upcomingRiders: action.riders.map(r => r.name).sort()
+      }
+    }
     case 'import-state': {
       return {
         ...action.state,

@@ -1,11 +1,11 @@
 import { BOTS } from "../data/bots";
-import { RIDERS } from "../data/riders";
-import type { LogItem, Lot, Team } from "../models/auction.models";
+import type { LogItem, Lot, StartListEntry, Team } from "../models/auction.models";
 
 export interface State {
   status: 'idle' | 'ongoing' | 'done',
   teams: Team[],
   currentLot: Lot | null,
+  startlist: StartListEntry[],
   upcomingRiders: string[],
   previousRiders: string[],
   log: LogItem[]
@@ -20,7 +20,8 @@ export const initialState: State = {
     riders: [] as { name: string, amount: number, comment: string | null }[]
   })),
   currentLot: null,
-  upcomingRiders: [...RIDERS],
+  startlist: [],
+  upcomingRiders: [],
   previousRiders: [],
   log: [{
     type: 'AUCTION_STARTED'
