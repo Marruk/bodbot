@@ -16,6 +16,7 @@ export interface Lot {
   playerOrder: string[],
   currentBidder: number,
   rider: string,
+  riderInfo: RiderInfo | null,
   winningBid: Bid | null,
   allBids: Bid[]
 }
@@ -67,6 +68,18 @@ export interface Bot {
 export interface BotResponse {
   amount: number | null
   comment: string | null
+}
+
+export interface RiderInfo {
+  name: string | null
+  nationality: string | null
+  birthdate: string | null
+  place_of_birth: string | null
+  height: number | null
+  weight: number | null
+  image_url: string | null
+  points_per_speciality: Record<string, number> | null
+  points_per_season_history: Record<string, unknown>[] | null
 }
 
 export type LogItem = {

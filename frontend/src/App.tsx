@@ -10,12 +10,13 @@ import Lot from './components/lot';
 import Teams from './components/teams';
 import { useTheme } from './components/theme/theme-provider';
 import { Button } from './components/ui/button';
+import { Spinner } from './components/ui/spinner';
 import { Switch } from './components/ui/switch';
 import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';
 import { BOTS } from './data/bots';
 import { RIDER_BIBS } from './data/riders';
-import { useWindowSize } from './lib/utils';
-import type { Bid, BotResponse, PlayerKey, Team } from './models/auction.models';
+import { riderNameToPcsUrl, useWindowSize } from './lib/utils';
+import type { Bid, BotResponse, PlayerKey, RiderInfo, Team } from './models/auction.models';
 import { auctionReducer } from './state/auction.reducer';
 import { initialState, type State } from './state/auction.state';
 
@@ -32,6 +33,7 @@ function App() {
 
   const { theme } = useTheme()
   const windowSize = useWindowSize();
+  const [isLoadingRider, setIsLoadingRider] = useState(false)
   const [isTurboMode, setTurboMode] = useState(false)
   const [turboSpeed, setTurboSpeed] = useState("default")
   const nextRiderRef = useRef<HTMLButtonElement>(null)
@@ -43,9 +45,11 @@ function App() {
   }
 
   const startLot = async () => {
-    const { rider, playerOrder, players, upcomingRiders, previousRiders } = prepareLotData(state)
+    setIsLoadingRider(true)
+    const { rider, riderInfo, playerOrder, players, upcomingRiders, previousRiders,  } = await prepareLotData(state)
+    setIsLoadingRider(false)
 
-    dispatch({ type: 'lot-start', rider, playerOrder })
+    dispatch({ type: 'lot-start', rider, riderInfo, playerOrder })
 
     let currentBidderIndex = 0
     let currentHighestBidderIndex = null
@@ -181,8 +185,11 @@ function App() {
                       <div className="flex-none flex items-center gap-12">
                         <div className="text-right min-w-[10rem]">
                           {state.status === 'ongoing' &&
-                            <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing'} onClick={() => startLot()}>
-                              Volgende fietser
+                            <Button size="lg" ref={nextRiderRef} disabled={state.currentLot?.status === 'ongoing' || isLoadingRider} onClick={() => startLot()}>
+                              <span className="relative">
+                                <span className={isLoadingRider ? 'opacity-0' : 'opacity-100'}>Volgende fietser</span>
+                                {isLoadingRider && <Spinner className="absolute inset-0 m-auto" />}
+                              </span>
                             </Button>
                           }
                           {state.status === 'done' &&
@@ -249,7 +256,7 @@ function App() {
 
 export default App
 
-function prepareLotData(state: State): { rider: string, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[]; } {
+async function prepareLotData(state: State): Promise<{ rider: string, riderInfo: RiderInfo | null, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[] }> {
   const randomRiderIndex = Math.floor(Math.random() * (state.upcomingRiders.length - 1))
   const rider = state.upcomingRiders[randomRiderIndex]
   const randomOrder = shufflePlayerOrder(Array(state.teams.length).fill(0).map((_, i) => i))
@@ -258,12 +265,22 @@ function prepareLotData(state: State): { rider: string, playerOrder: PlayerKey[]
   const upcomingRiders = [...state.upcomingRiders]
   upcomingRiders.splice(randomRiderIndex, 1)
 
+  let riderInfo: RiderInfo | null = null
+  try {
+    const slug = riderNameToPcsUrl(rider).replace('rider/', '')
+    const res = await fetch(`http://localhost:8000/rider/${slug}`)
+    if (res.ok) riderInfo = await res.json()
+  } catch {
+    // fail silently
+  }
+
   return {
     rider,
+    riderInfo,
     playerOrder: randomPlayerOrder,
     players: state.teams,
     upcomingRiders,
-    previousRiders: state.previousRiders
+    previousRiders: state.previousRiders,
   }
 }
 

@@ -1,4 +1,4 @@
-import type { Bid } from "@/models/auction.models";
+import type { Bid, RiderInfo } from "@/models/auction.models";
 import type { State } from "./auction.state";
 
 export type AuctionAction = {
@@ -8,6 +8,7 @@ export type AuctionAction = {
 } | {
   type: 'lot-start',
   rider: string,
+  riderInfo: RiderInfo | null,
   playerOrder: string[]
 } | {
   type: 'bid-pending',

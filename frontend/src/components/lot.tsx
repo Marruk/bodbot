@@ -1,6 +1,6 @@
 import { BOTS } from "@/data/bots";
 import type { Lot } from "@/models/auction.models";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import BidCard from "./bid-card";
 import Money from "./money";
 import { Badge } from "./ui/badge";
@@ -8,6 +8,7 @@ import { Badge } from "./ui/badge";
 export default function Lot({ lot }: { lot: Lot }) {
   const bidsContainerRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [birthplaceConnector] = useState(['pittoreske', 'prachtige', 'fantastische', 'mooie', 'idyllische'][Math.round(Math.random() * 4)])
   
   useEffect(() => {
     const transitionClasses = ['opacity-0', 'translate-y-4']
@@ -30,11 +31,94 @@ export default function Lot({ lot }: { lot: Lot }) {
   return (
     <>
       <div ref={containerRef} className="flex items-center h-full gap-20">
-        <div className="flex-[0_0_33%]">
-          <div className="text-5xl font-bold text-balance">
-            {lot.rider}
+        <div className="flex-[0_0_40%]">
+          <div className="text-5xl font-bold text-balance flex items-baseline gap-3 mb-3">
+            {lot.riderInfo?.name || lot.rider}
+            {lot.riderInfo?.nationality && <img className="border-1 w-8 rounded-sm" src={`https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/${lot.riderInfo?.nationality.toLowerCase()}.svg`} /> }
           </div>
-          <div className="mt-8">
+          <div className="flex items-center gap-4">
+            { lot.riderInfo?.image_url &&
+              <img className="border-1 w-20 rounded-lg shadow-md" src={`https://www.procyclingstats.com/${lot.riderInfo.image_url}`} />
+            }
+            <div>
+              <div className="text-sm text-muted-foreground flex flex-col gap-1">
+                { lot.riderInfo?.place_of_birth &&
+                  <>
+                    Geboren in het {birthplaceConnector} {lot.riderInfo.place_of_birth}
+                  </>
+                }
+                { lot.riderInfo &&
+                  <div className="flex gap-1">
+                    { lot.riderInfo?.weight && <div>{lot.riderInfo?.weight} kg</div> }
+                    { lot.riderInfo?.weight && lot.riderInfo?.height && <div>•</div> }
+                    { lot.riderInfo?.height && <div>{lot.riderInfo?.height} m</div> }
+                  </div>
+                }
+              </div>
+              {lot.riderInfo?.points_per_speciality && 
+                <div className="text-xs mt-4 grid grid-cols-3 gap-x-4 gap-y-2">
+                  {
+                    [
+                      {
+                        class: 'oneday',
+                        property: 'one_day_races',
+                        label: 'One day races',
+                        color: '#A0D54C'
+                      },
+                      {
+                        class: 'gc',
+                        property: 'gc',
+                        label: 'Gc',
+                        color: '#F42A0E'
+                      },
+                      {
+                        class: 'tt',
+                        property: 'time_trial',
+                        label: 'Time trial',
+                        color: '#5DA9EF'
+                      },
+                      {
+                        class: 'sprint',
+                        property: 'sprint',
+                        label: 'Sprint',
+                        color: '#FFAD4E'
+                      },
+                      {
+                        class: 'climber',
+                        property: 'climber',
+                        label: 'Climber',
+                        color: '#aa3df2'
+                      },
+                      {
+                        class: 'hills',
+                        property: 'hills',
+                        label: 'Hills',
+                        color: '#ff64d3'
+                      }
+                    ].map((specialty) => {
+                      const points = lot.riderInfo?.points_per_speciality?.[specialty.property]
+                      const maxSpecialtyPoints = Math.max(...Object.values(lot.riderInfo?.points_per_speciality ?? {}))
+
+                      return (
+                        <div key={specialty.class} className={`rider-specialty rider-specialty--${specialty.class}`}>
+                          <div className="h-1 bg-muted rounded-sm overflow-hidden">
+                            <div className="w-full h-1" style={{ backgroundColor: specialty.color, width: `${Math.round(((points ?? 0) / maxSpecialtyPoints) * 100)}%` }}></div>
+                          </div>
+                          <span className="text-muted-foreground">
+                            {specialty.label}&nbsp;&nbsp;
+                          </span>
+                          <span className="font-medium">
+                            {points}
+                          </span>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <div className="mt-16">
             <div className="text-muted-foreground text-sm font-semibold">
               Hoogste bod
             </div>

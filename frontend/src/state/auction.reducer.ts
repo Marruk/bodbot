@@ -44,6 +44,7 @@ export function auctionReducer(state: State, action: AuctionAction): State {
           playerOrder: action.playerOrder,
           currentBidder: 0,
           rider: action.rider,
+          riderInfo: action.riderInfo,
           winningBid: null,
           allBids: []
         },

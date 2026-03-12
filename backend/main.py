@@ -30,9 +30,7 @@ def get_rider(rider_slug: str):
             "weight": rider.weight(),
             "image_url": rider.image_url(),
             "points_per_speciality": rider.points_per_speciality(),
-            "teams_history": rider.teams_history(),
             "points_per_season_history": rider.points_per_season_history(),
-            "season_results": rider.season_results(),
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
