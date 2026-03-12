@@ -98,11 +98,12 @@ function App() {
           },
           others: players.filter(p => p.key !== currentBidderKey),
           upcomingRiders: upcomingRiders,
-          previousRiders: previousRiders
+          previousRiders: previousRiders,
+          riderInfo: riderInfo
         }
 
         receivedBid = await Promise.race([
-          currentBidder?.bot.code(bidInput.rider, bidInput.riderBib, bidInput.highestBid, bidInput.highestBidBy, bidInput.bids, bidInput.you, bidInput.others, bidInput.upcomingRiders, bidInput.previousRiders),
+          currentBidder?.bot.code(bidInput.rider, bidInput.riderBib, bidInput.highestBid, bidInput.highestBidBy, bidInput.bids, bidInput.you, bidInput.others, bidInput.upcomingRiders, bidInput.previousRiders, bidInput.riderInfo),
           new Promise<undefined>((resolve) => setTimeout(resolve, 5000))
         ])
 

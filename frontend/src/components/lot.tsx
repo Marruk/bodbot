@@ -33,7 +33,7 @@ export default function Lot({ lot }: { lot: Lot }) {
       <div ref={containerRef} className="flex items-center h-full gap-20">
         <div className="flex-[0_0_40%]">
           <div className="text-5xl font-bold text-balance flex items-baseline gap-3 mb-3">
-            {lot.riderInfo?.name || lot.rider}
+            {lot.rider}
             {lot.riderInfo?.nationality && <img className="border-1 w-8 rounded-sm" src={`https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/${lot.riderInfo?.nationality.toLowerCase()}.svg`} /> }
           </div>
           <div className="flex items-center gap-4">
@@ -55,54 +55,25 @@ export default function Lot({ lot }: { lot: Lot }) {
                   </div>
                 }
               </div>
-              {lot.riderInfo?.points_per_speciality && 
+              {lot.riderInfo?.points_per_speciality &&
                 <div className="text-xs mt-4 grid grid-cols-3 gap-x-4 gap-y-2">
                   {
                     [
-                      {
-                        class: 'oneday',
-                        property: 'one_day_races',
-                        label: 'One day races',
-                        color: '#A0D54C'
-                      },
-                      {
-                        class: 'gc',
-                        property: 'gc',
-                        label: 'Gc',
-                        color: '#F42A0E'
-                      },
-                      {
-                        class: 'tt',
-                        property: 'time_trial',
-                        label: 'Time trial',
-                        color: '#5DA9EF'
-                      },
-                      {
-                        class: 'sprint',
-                        property: 'sprint',
-                        label: 'Sprint',
-                        color: '#FFAD4E'
-                      },
-                      {
-                        class: 'climber',
-                        property: 'climber',
-                        label: 'Climber',
-                        color: '#aa3df2'
-                      },
-                      {
-                        class: 'hills',
-                        property: 'hills',
-                        label: 'Hills',
-                        color: '#ff64d3'
-                      }
+                      { class: 'oneday', property: 'one_day_races' as const, label: 'One day races', color: '#A0D54C' },
+                      { class: 'gc', property: 'gc' as const, label: 'Gc', color: '#F42A0E' },
+                      { class: 'tt', property: 'time_trial' as const, label: 'Time trial', color: '#5DA9EF' },
+                      { class: 'sprint', property: 'sprint' as const, label: 'Sprint', color: '#FFAD4E' },
+                      { class: 'climber', property: 'climber' as const, label: 'Climber', color: '#aa3df2' },
+                      { class: 'hills', property: 'hills' as const, label: 'Hills', color: '#ff64d3' }
                     ].map((specialty) => {
-                      const points = lot.riderInfo?.points_per_speciality?.[specialty.property]
-                      const maxSpecialtyPoints = Math.max(...Object.values(lot.riderInfo?.points_per_speciality ?? {}))
+                      const speciality = lot.riderInfo!.points_per_speciality!
+                      const points = speciality[specialty.property]
+                      const maxSpecialtyPoints = Math.max(...Object.values(speciality).filter((v): v is number => v !== null))
 
                       return (
                         <div key={specialty.class} className={`rider-specialty rider-specialty--${specialty.class}`}>
                           <div className="h-1 bg-muted rounded-sm overflow-hidden">
-                            <div className="w-full h-1" style={{ backgroundColor: specialty.color, width: `${Math.round(((points ?? 0) / maxSpecialtyPoints) * 100)}%` }}></div>
+                            <div className="h-1" style={{ backgroundColor: specialty.color, width: `${Math.round(((points ?? 0) / maxSpecialtyPoints) * 100)}%` }}></div>
                           </div>
                           <span className="text-muted-foreground">
                             {specialty.label}&nbsp;&nbsp;

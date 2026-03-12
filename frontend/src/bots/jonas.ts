@@ -10,9 +10,9 @@ export default function bot(
   rider: string, // naam zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical
   riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical (-1 als het niet bekend is)
   highestBid: number | null, // hoogste bod, is nooit van jou
-  highestBidBy: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | null, // hoogste bod persoon
+  highestBidBy: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'jonas' | 'tadej' | null, // hoogste bod persoon
   bids: { // alle boden (in oplopende volgorde), inclusief die van jou
-    player: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran', // naam
+    player: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'jonas' | 'tadej', // naam
     amount: number, // geboden bedrag
     comment: string | null, // leuk berichtje
   }[],
@@ -25,7 +25,7 @@ export default function bot(
     }[],
   },
   others: { // de rest, jij komt hier niet voor
-    key: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran', // iedereen die meedoet
+    key: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'jonas' | 'tadej', // iedereen die meedoet
     moneyLeft: number, // hoeveel geld ze nog hebben
     riders: { // wie ze al in hun team hebben
       name: string, // fietser
@@ -34,7 +34,29 @@ export default function bot(
     }[],
   }[],
   upcomingRiders: string[], // wie er nog komen in alfabetische volgorde (exclusief huidige)
-  previousRiders: string[] // wie er al zijn geweest in alfabetische volgorde (exclusief huidige)
+  previousRiders: string[], // wie er al zijn geweest in alfabetische volgorde (exclusief huidige)
+  riderInfo: { // wat info van PCS, maar misschien ook niet
+    name: string // naam
+    nationality: string // land code (twee letters)
+    birthdate: string // gewoon lekker in een string: YYYY-MM-DD
+    place_of_birth: string | null // mooie plek
+    height: number | null // lengte in meter
+    weight: number | null  // zwaarte in kilogram
+    image_url: string | null // leuk kiekje
+    points_per_speciality: { // PCS punten, spreekt voor zich
+      one_day_races: number,
+      gc: number,
+      time_trial: number,
+      sprint: number,
+      climber: number,
+      hills: number,
+    },
+    points_per_season_history: { // punten per seizoen
+      season: number, // jaartal
+      points: number, // aantal punten
+      rank: number, // ranking van dat jaar
+    }[],
+  } | null,
 ): {
   amount: number | null, // hoeveel je wil bieden, moet deelbaar zijn door een ton
   comment: string | null // leuk berichtje doe iedereen de groeten

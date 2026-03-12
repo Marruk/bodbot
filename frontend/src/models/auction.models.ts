@@ -61,7 +61,8 @@ export interface Bot {
       }[]
     }[],
     upcomingRiders: string[],
-    previousRiders: string[]
+    previousRiders: string[],
+    riderInfo: RiderInfo | null,
   ) => BotResponse | Promise<BotResponse>
 }
 
@@ -71,15 +72,26 @@ export interface BotResponse {
 }
 
 export interface RiderInfo {
-  name: string | null
-  nationality: string | null
-  birthdate: string | null
+  name: string
+  nationality: string
+  birthdate: string
   place_of_birth: string | null
   height: number | null
   weight: number | null
   image_url: string | null
-  points_per_speciality: Record<string, number> | null
-  points_per_season_history: Record<string, unknown>[] | null
+  points_per_speciality: {
+    one_day_races: number,
+    gc: number,
+    time_trial: number,
+    sprint: number,
+    climber: number,
+    hills: number,
+  }
+  points_per_season_history: {
+    season: number
+    points: number
+    rank: number
+  }[]
 }
 
 export type LogItem = {
