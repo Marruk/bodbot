@@ -14,6 +14,7 @@ import { Spinner } from './components/ui/spinner';
 import { Switch } from './components/ui/switch';
 import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';
 import { BOTS } from './data/bots';
+import { RIDER_BIBS, RIDERS } from './data/riders';
 import { useWindowSize } from './lib/utils';
 import type { Bid, BotResponse, PlayerKey, RiderInfo, Team } from './models/auction.models';
 import { auctionReducer } from './state/auction.reducer';
@@ -41,7 +42,19 @@ function App() {
     fetch('http://localhost:8000/startlist/giro-d-italia/2026')
       .then(r => r.json())
       .then(riders => dispatch({ type: 'set-startlist', riders }))
-      .catch(() => {})
+      .catch(() => {
+        dispatch({
+          type: 'set-startlist',
+          riders: RIDERS.map(name => ({
+            name,
+            bib: RIDER_BIBS[name] ?? -1,
+            url: '',
+            nationality: '',
+            teamName: '',
+            teamUrl: '',
+          }))
+        })
+      })
   }, [])
 
   const TURBO_SPEEDS: { [label: string]: number } = {
