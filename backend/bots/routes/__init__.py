@@ -1,0 +1,78 @@
+from fastapi import APIRouter
+from ..wout import bot as wout_bot
+from typing import Optional
+from pydantic import BaseModel
+
+
+class BidEntry(BaseModel):
+    player: str
+    amount: int
+    comment: Optional[str]
+
+class TeamEntry(BaseModel):
+    name: str
+    amount: int
+    comment: Optional[str]
+
+class YouState(BaseModel):
+    moneyLeft: int
+    riders: list[TeamEntry]
+
+class OtherState(BaseModel):
+    key: str
+    moneyLeft: int
+    riders: list[TeamEntry]
+
+class PointsPerSpeciality(BaseModel):
+    oneDayRaces: Optional[int]
+    gc: Optional[int]
+    timeTrial: Optional[int]
+    sprint: Optional[int]
+    climber: Optional[int]
+    hills: Optional[int]
+
+class PointsPerSeason(BaseModel):
+    season: int
+    points: int
+    rank: int
+
+class RiderInfo(BaseModel):
+    name: Optional[str]
+    nationality: Optional[str]
+    birthdate: Optional[str]
+    placeOfBirth: Optional[str]
+    currentTeam: Optional[str]
+    height: Optional[float]
+    weight: Optional[float]
+    imageUrl: Optional[str]
+    pointsPerSpeciality: Optional[PointsPerSpeciality]
+    pointsPerSeasonHistory: Optional[list[PointsPerSeason]]
+
+class BotRequest(BaseModel):
+    rider: str
+    riderBib: int
+    highestBid: Optional[int]
+    highestBidBy: Optional[str]
+    bids: list[BidEntry]
+    you: YouState
+    others: list[OtherState]
+    upcomingRiders: list[str]
+    previousRiders: list[str]
+    riderInfo: Optional[RiderInfo]
+
+router = APIRouter(prefix="/bot")
+
+@router.post("/wout")
+def call_wout(req: BotRequest):
+    return wout_bot(
+        rider=req.rider,
+        rider_bib=req.riderBib,
+        highest_bid=req.highestBid,
+        highest_bid_by=req.highestBidBy,
+        bids=[b.model_dump() for b in req.bids],
+        you=req.you.model_dump(),
+        others=[o.model_dump() for o in req.others],
+        upcoming_riders=req.upcomingRiders,
+        previous_riders=req.previousRiders,
+        rider_info=req.riderInfo.model_dump() if req.riderInfo else None,
+    )

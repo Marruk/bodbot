@@ -3,15 +3,19 @@ import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from procyclingstats import Rider, RaceStartlist
+from bots.routes import router as bots_router
 
 app = FastAPI(title="BodBot API")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+# Bots
+app.include_router(bots_router)
 
 @app.get("/startlist/{race_slug}/{year}")
 def get_startlist(race_slug: str, year: str):

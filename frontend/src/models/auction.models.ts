@@ -1,4 +1,4 @@
-export type PlayerKey = 'daan' | 'mark' | 'niels' | 'hannah' | 'joran' | 'lucas' | 'jonas' | 'tadej'
+export type PlayerKey = 'daan' | 'mark' | 'niels' | 'hannah' | 'joran' | 'lucas' | 'jonas' | 'tadej' | 'wout'
 
 export interface StartListEntry {
   name: string

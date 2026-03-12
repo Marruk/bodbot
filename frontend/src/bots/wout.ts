@@ -58,16 +58,13 @@ export default function bot(
       rank: number, // ranking van dat jaar
     }[],
   } | null,
-): {
-  amount: number | null, // hoeveel je wil bieden, moet deelbaar zijn door een ton
+): Promise<{
   comment: string | null // leuk berichtje doe iedereen de groeten
-} {
-  const randomAmount = (highestBid ?? 0) + (100000 * Math.round(Math.random() * 5 + 1))
-
-  const doBid = Math.random() < 0.5
-
-  return {
-    amount: doBid ? Math.min(you.moneyLeft, randomAmount) : null,
-    comment: doBid ? "ok dit is echt mijn laatste bod" : "deze hoef ik niet"
-  }
+  amount: number | null, // hoeveel je wil bieden, moet deelbaar zijn door een ton
+}> {
+  return fetch('http://localhost:8000/bot/wout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rider, riderBib, highestBid, highestBidBy, bids, you, others, upcomingRiders, previousRiders, riderInfo })
+  }).then(r => r.json())
 }
