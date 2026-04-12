@@ -7,8 +7,8 @@
 // komt eigenlijk gewoon neer als het nog zin heeft om een bod te doen dus ja
 
 export default function bot(
-  rider: string, // naam zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical
-  riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical (-1 als het niet bekend is)
+  rider: string, // naam zoals op https://www.procyclingstats.com/race/giro-d-italia/2026/startlist/alphabetical
+  riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/giro-d-italia/2026/startlist/alphabetical (-1 als het niet bekend is)
   highestBid: number | null, // hoogste bod, is nooit van jou
   highestBidBy: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'jonas' | 'tadej' | 'wout' | null, // hoogste bod persoon
   bids: { // alle boden (in oplopende volgorde), inclusief die van jou

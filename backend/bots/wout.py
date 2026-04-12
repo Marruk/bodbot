@@ -56,12 +56,12 @@ class BotResponse(TypedDict):
     comment: str # leuk berichtje doe iedereen de groeten
 
 def bot(
-    rider: str, # naam zoals op procyclingstats
-    rider_bib: int, # rugnummer (-1 als niet bekend)
+    rider: str, # naam zoals op https://www.procyclingstats.com/race/giro-d-italia/2026/startlist/alphabetical
+    rider_bib: int, # nummer zoals op https://www.procyclingstats.com/race/giro-d-italia/2026/startlist/alphabetical (-1 als het niet bekend is)
     highest_bid: int | None, # hoogste bod, is nooit van jou
     highest_bid_by: str | None, # hoogste bod persoon
     bids: list[BidEntry], # alle boden (in oplopende volgorde), inclusief die van jou
-    you: YouState, # jouw staat
+    you: YouState,
     others: list[OtherState], # de rest, jij komt hier niet voor
     upcoming_riders: list[str], # wie er nog komen in alfabetische volgorde (exclusief huidige)
     previous_riders: list[str], # wie er al zijn geweest in alfabetische volgorde (exclusief huidige)
