@@ -49,7 +49,7 @@ class RiderInfo(TypedDict): # wat info van PCS, maar misschien ook niet
     weight: float | None # zwaarte in kilogram
     imageUrl: str | None # leuk kiekje
     pointsPerSpeciality: PointsPerSpeciality | None
-    pointsPerSeasonHistory: list[PointsPerSeason] | None
+    pointsPerSeasonHistory: list[PointsPerSeason] | None # aflopend, dit jaar eerst
 
 class BotResponse(TypedDict):
     amount: int | None # hoeveel je wil bieden, moet deelbaar zijn door een ton

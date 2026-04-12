@@ -52,7 +52,7 @@ export default function bot(
       climber: number,
       hills: number,
     },
-    pointsPerSeasonHistory: { // punten per seizoen
+    pointsPerSeasonHistory: { // punten per seizoen, aflopend
       season: number, // jaartal
       points: number, // aantal punten
       rank: number, // ranking van dat jaar
