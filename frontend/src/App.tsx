@@ -1,5 +1,5 @@
 import { Separator } from '@radix-ui/react-separator';
-import { Rabbit, Tablets, Turtle } from 'lucide-react';
+import { Rabbit, Tablets, Turtle, Zap } from 'lucide-react';
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { Toaster } from 'sonner';
 import './App.css';
@@ -58,14 +58,15 @@ function App() {
   }, [])
 
   const TURBO_SPEEDS: { [label: string]: number } = {
-    "fast": 100,
+    "ultra": 100,
+    "fast": 300,
     "default": 1000,
     "slow": 3000
   }
 
   const startLot = async () => {
     setIsLoadingRider(true)
-    const { rider, riderBib, riderInfo, playerOrder, players, upcomingRiders, previousRiders } = await prepareLotData(state, isTurboMode)
+    const { rider, riderBib, riderInfo, playerOrder, players, upcomingRiders, previousRiders } = await prepareLotData(state, isTurboMode, turboSpeed)
     setIsLoadingRider(false)
 
     dispatch({ type: 'lot-start', rider, riderInfo, playerOrder })
@@ -156,7 +157,8 @@ function App() {
       dispatch({ type: 'bid-received', bid })
       currentBidderIndex = (currentBidderIndex + 1) % state.teams.length
 
-      await new Promise((resolve) => setTimeout(resolve, TURBO_SPEEDS[turboSpeed]));
+      const delay = Math.max(TURBO_SPEEDS[turboSpeed], bids.filter(b => b.amount ?? 0 > 0).length > 0 && turboSpeed === 'fast' ? TURBO_SPEEDS['default'] : -1)
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
 
     dispatch({ type: 'lot-end' })
@@ -166,7 +168,7 @@ function App() {
         type: 'end'
       })
     } else {
-      if (isTurboMode) {
+      if ((bids.filter(b => b.amount ?? 0 > 0).length === 0 && isTurboMode) || (isTurboMode && turboSpeed === 'ultra')) {
         await new Promise((resolve) => setTimeout(resolve, TURBO_SPEEDS[turboSpeed]));
         nextRiderRef.current?.click()
       }
@@ -213,7 +215,7 @@ function App() {
                             </Button>
                           }
                           {state.status === 'done' &&
-                            <Button onClick={() => dispatch({ type: 'restart' })}>
+                            <Button onClick={() => window.location.reload()}>
                               Even opnieuw hoor
                             </Button>
                           }
@@ -223,8 +225,11 @@ function App() {
                             Snelheid
                           </div>
                           <ToggleGroup onValueChange={setTurboSpeed} defaultValue="default" type="single" variant="outline">
-                            <ToggleGroupItem value="fast">
+                            <ToggleGroupItem value="ultra">
                               <Tablets size={16} />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="fast">
+                              <Zap size={16} />
                             </ToggleGroupItem>
                             <ToggleGroupItem value="default">
                               <Rabbit size={16} />
@@ -276,7 +281,7 @@ function App() {
 
 export default App
 
-async function prepareLotData(state: State, isTurboMode: boolean): Promise<{ rider: string, riderBib: number, riderInfo: RiderInfo | null, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[] }> {
+async function prepareLotData(state: State, isTurboMode: boolean, turboSpeed: string): Promise<{ rider: string, riderBib: number, riderInfo: RiderInfo | null, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[] }> {
   const randomRiderIndex = Math.floor(Math.random() * (state.upcomingRiders.length - 1))
   const rider = state.upcomingRiders[randomRiderIndex]
   const randomOrder = shufflePlayerOrder(Array(state.teams.length).fill(0).map((_, i) => i))
@@ -288,7 +293,7 @@ async function prepareLotData(state: State, isTurboMode: boolean): Promise<{ rid
   const riderStartListEntry = state.startlist.find(r => r.name === rider)
   let riderInfo: RiderInfo | null = null
 
-  if (riderStartListEntry !== undefined && !isTurboMode) {
+  if (riderStartListEntry !== undefined && (turboSpeed !== 'ultra' || !isTurboMode)) {
     try {
       const res = await fetch(`http://localhost:8000/${riderStartListEntry.url}`)
       if (res.ok) riderInfo = await res.json()
