@@ -2,12 +2,12 @@
 // @ts-expect-error "javascript noob"
 import tadej from "../bots/tadej"
 import mark from "../bots/mark.ts"
-import niels from "../bots/niels"
+// import niels from "../bots/niels"
 import jonas from "../bots/jonas"
-import daan from "../bots/daan"
-import lucas from "../bots/lucas"
-import hannah from "../bots/hannah/hannah.ts"
-import joran from "../bots/joran"
+// import daan from "../bots/daan"
+// import lucas from "../bots/lucas"
+// import hannah from "../bots/hannah/hannah.ts"
+// import joran from "../bots/joran"
 import wout from "../bots/wout"
 
 import type { Bot } from "../models/auction.models"
@@ -30,19 +30,19 @@ export const BOTS: { [key: string]: Bot } = {
     owner: 'Wout',
     name: 'Gezellig',
     code: wout
-  }
+  },
   // 'daan': {
   //   key: 'daan',
   //   owner: 'Daan',
   //   name: 'De ultieme veiler',
   //   code: daan
   // },
-  // 'mark': {
-  //   key: 'mark',
-  //   owner: 'Mark',
-  //   name: 'Lekker Fietsen',
-  //   code: mark
-  // },
+  'mark': {
+    key: 'mark',
+    owner: 'Mark',
+    name: 'Lekker Fietsen',
+    code: mark
+  },
   // 'niels': {
   //   key: 'niels',
   //   owner: 'Niels',
