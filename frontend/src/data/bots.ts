@@ -32,20 +32,14 @@ export const BOTS: { [key: string]: Bot } = {
     name: 'Gezellig',
     code: wout
   },
-  // 'daan': {
-  //   key: 'daan',
-  //   owner: 'Daan',
-  //   name: 'De ultieme veiler',
-  //   code: daan
-  // },
   'mark': {
     key: 'mark',
     owner: 'Mark',
     name: 'Lekker Fietsen',
     code: mark
   },
-  eddyMerckx: {
-    key: "eddyMerckx",
+  daan: {
+    key: "daan",
     owner: "Daan",
     name: "De ultieme veiler",
     code: eddyMerckx,
