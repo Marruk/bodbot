@@ -21,3 +21,4 @@ uvicorn main:app --reload
 ```
 
 API runs at `http://localhost:8000` — e.g. `GET /rider/tadej-pogacar`
+ja of niet want bij mij doet ie 5173 dus ja
