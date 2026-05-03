@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from ..eddyMerckx import bot as eddy_bot
 from ..wout import bot as wout_bot
 from typing import Optional
 from pydantic import BaseModel
@@ -65,6 +66,21 @@ router = APIRouter(prefix="/bot")
 @router.post("/wout")
 def call_wout(req: BotRequest):
     return wout_bot(
+        rider=req.rider,
+        rider_bib=req.riderBib,
+        highest_bid=req.highestBid,
+        highest_bid_by=req.highestBidBy,
+        bids=[b.model_dump() for b in req.bids],
+        you=req.you.model_dump(),
+        others=[o.model_dump() for o in req.others],
+        upcoming_riders=req.upcomingRiders,
+        previous_riders=req.previousRiders,
+        rider_info=req.riderInfo.model_dump() if req.riderInfo else None,
+    )
+
+@router.post("/eddyMerckx")
+def call_eddy(req: BotRequest):
+    return eddy_bot(
         rider=req.rider,
         rider_bib=req.riderBib,
         highest_bid=req.highestBid,
