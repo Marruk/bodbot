@@ -1,4 +1,3 @@
-from tokenize import String
 from typing import TypedDict
 
 SPOTS_PER_TEAM: int = 8
@@ -97,13 +96,13 @@ class theSuperComputer:
             return "voor het algemeen klassement"
         if ((stats.get('climber') or 0) > self.bestClimbStat):
             return "voor het klimmen"
-        if ((stats.get('sprint') or 0) > self.bestClimbStat):
+        if ((stats.get('sprint') or 0) > self.bestSprintStat):
             return "voor het sprinten"
-        if ((stats.get('timeTrial') or 0) > self.bestClimbStat):
+        if ((stats.get('timeTrial') or 0) > self.bestTtStat):
             return "voor het tijdrijden"
-        if ((stats.get('oneDayRaces') or 0) > self.bestClimbStat):
+        if ((stats.get('oneDayRaces') or 0) > self.bestOneDayStat):
             return "voor etappes"
-        if ((stats.get('hills') or 0) > self.bestClimbStat):
+        if ((stats.get('hills') or 0) > self.bestHillStat):
             return "voor de heuveltjes"
         return "die niks kan"
 
@@ -119,13 +118,13 @@ class theSuperComputer:
             return tonnetjeMeer
         if ((stats.get('climber') or 0) > self.bestClimbStat):
             return tonnetjeMeer
-        if ((stats.get('sprint') or 0) > self.bestClimbStat):
+        if ((stats.get('sprint') or 0) > self.bestSprintStat):
             return tonnetjeMeer
-        if ((stats.get('timeTrial') or 0) > self.bestClimbStat):
+        if ((stats.get('timeTrial') or 0) > self.bestTtStat):
             return tonnetjeMeer
-        if ((stats.get('oneDayRaces') or 0) > self.bestClimbStat):
+        if ((stats.get('oneDayRaces') or 0) > self.bestOneDayStat):
             return tonnetjeMeer
-        if ((stats.get('hills') or 0) > self.bestClimbStat):
+        if ((stats.get('hills') or 0) > self.bestHillStat):
             return tonnetjeMeer
         return None
 
@@ -176,16 +175,16 @@ def bot(
         + str(superComputer.bestTotalStats)
         }
 
-    if (len(upcoming_riders) * 3 < superComputer.computeSpotsLeft(you, others)): #dus een derde moet nog gekocht worden
+    if (len(upcoming_riders) < superComputer.computeSpotsLeft(you, others) * 3): #dus een derde moet nog gekocht worden
         if superComputer.inflationActive > 0.9:
             superComputer.applyInflation(0.9)
 
-    if (len(upcoming_riders) * 2 < superComputer.computeSpotsLeft(you, others)): #dus de helft moet nog gekocht worden
+    if (len(upcoming_riders) < superComputer.computeSpotsLeft(you, others) * 2): #dus de helft moet nog gekocht worden
         if superComputer.inflationActive > 0.5:
             superComputer.applyInflation(0.5)
 
 
-    comment = "wow ja ik zocht nog iemand " + superComputer.determineComment(rider_info)
+    comment = "wow ja ik zocht nog iemand " + superComputer.determineComment(rider_info) + str(superComputer.bestOneDayStat) + ", " + str(superComputer.bestGcStat) + ", " + str(superComputer.bestTtStat) + ", " + str(superComputer.bestSprintStat) + ", " + str(superComputer.bestClimbStat) + ", " + str(superComputer.bestHillStat) + ", " + str(superComputer.bestTotalStats)
     bot = superComputer.determineBid(rider_info, highest_bid, you)
 
     return {
