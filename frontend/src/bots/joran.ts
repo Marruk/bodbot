@@ -123,24 +123,42 @@ export default function bot(
       comment: "tief op met deze nono",
     };
   }
+  const plekkenOver = AANTAL_RENNERS_PER_TEAM - you.riders.length;
 
-  // Even zeker maken dat we niet alleen maar tonnetjes kopen
+  // Als ik nog x plekken heb en deze renner heeft ranking <= x, dan altijd bieden.
+  if (plekkenOver >= rankingVanIedereenDieNogMoetKomen) {
+    if (highestBid === null) {
+      return {
+        amount: TONNETJE,
+        comment: "TONNETJE",
+      };
+    }
 
-  if (highestBid === null) {
     return {
-      amount: TONNETJE,
-      comment: "TONNETJE",
+      amount: highestBid + TONNETJE,
+      comment: "nou vooruit",
     };
   }
 
-  if (
-    isTooExpensive(
-      highestBid,
-      rankingVanIedereenDieNogMoetKomen,
-      aantalPlekkenOverInAlleTeams,
-      you,
-    )
-  ) {
+  // Even zeker maken dat we niet alleen maar tonnetjes kopen
+  if (highestBid === null) {
+    const gemiddeldBodOver = you.moneyLeft / plekkenOver;
+
+    // Alleen tonnetjes bieden als we niet zoveel geld meer hebben
+    if (gemiddeldBodOver < 1_200_000) {
+      return {
+        amount: TONNETJE,
+        comment: "TONNETJE",
+      };
+    }
+
+    return {
+      amount: null,
+      comment: "leuke renner, maar nu even niet",
+    };
+  }
+
+  if (isTooExpensive(highestBid, rankingVanIedereenDieNogMoetKomen, you)) {
     return {
       amount: null,
       comment: "zijn jullie helemaal koekwaus geworden",
@@ -154,9 +172,8 @@ export default function bot(
 }
 
 function isTooExpensive(
-  highestBid: number | null,
-  ranking: number,
-  aantalRennersDieJeWil: number,
+  highestBid: number,
+  rankingVanIedereenDieNogMoetKomen: number,
   you: {
     moneyLeft: number;
     riders: {
@@ -172,6 +189,15 @@ function isTooExpensive(
 
   // Hebben we nog genoeg geld voor een heel team?
   if (geldOverNaHogerBod / plekkenOver < TONNETJE) {
+    return true;
+  }
+
+  // Is ie erg duur voor een niet-toppert?
+  if (
+    rankingVanIedereenDieNogMoetKomen > AANTAL_RENNERS_PER_TEAM &&
+    highestBid &&
+    highestBid > 3_000_000
+  ) {
     return true;
   }
 
