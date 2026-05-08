@@ -118,10 +118,6 @@ export default function bot(
       }, 0) +
     (AANTAL_RENNERS_PER_TEAM - you.riders.length)
 
-  console.log(
-    rankingVanDezeRennerVanIedereenDieNogMoetKomen,
-    aantalPlekkenOverInAlleTeams
-  )
   if (
     rankingVanDezeRennerVanIedereenDieNogMoetKomen >
     aantalPlekkenOverInAlleTeams
