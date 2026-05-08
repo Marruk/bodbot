@@ -102,10 +102,12 @@ export default function bot(
   amount: number | null; // hoeveel je wil bieden, moet deelbaar zijn door een ton
   comment: string | null; // leuk berichtje doe iedereen de groeten
 } {
-  const rankingVanIedereenDieNogMoetKomen =
-    Object.keys(rankingList)
-      .filter((naam) => [...upcomingRiders, rider].includes(naam))
+  const rankingVanDezeRennerVanIedereenDieNogMoetKomen =
+    rankingList
+      .filter((naam) => !previousRiders.includes(naam))
       .indexOf(rider) + 1;
+
+  console.log(rankingVanDezeRennerVanIedereenDieNogMoetKomen);
 
   const aantalPlekkenOverInAlleTeams =
     others
@@ -117,7 +119,10 @@ export default function bot(
       }, 0) +
     (AANTAL_RENNERS_PER_TEAM - you.riders.length);
 
-  if (rankingVanIedereenDieNogMoetKomen > aantalPlekkenOverInAlleTeams) {
+  if (
+    rankingVanDezeRennerVanIedereenDieNogMoetKomen >
+    aantalPlekkenOverInAlleTeams
+  ) {
     return {
       amount: null,
       comment: "tief op met deze nono",
@@ -126,7 +131,7 @@ export default function bot(
   const plekkenOver = AANTAL_RENNERS_PER_TEAM - you.riders.length;
 
   // Als ik nog x plekken heb en deze renner heeft ranking <= x, dan altijd bieden.
-  if (plekkenOver >= rankingVanIedereenDieNogMoetKomen) {
+  if (plekkenOver >= rankingVanDezeRennerVanIedereenDieNogMoetKomen) {
     if (highestBid === null) {
       return {
         amount: TONNETJE,
@@ -158,7 +163,13 @@ export default function bot(
     };
   }
 
-  if (isTooExpensive(highestBid, rankingVanIedereenDieNogMoetKomen, you)) {
+  if (
+    isTooExpensive(
+      highestBid,
+      rankingVanDezeRennerVanIedereenDieNogMoetKomen,
+      you,
+    )
+  ) {
     return {
       amount: null,
       comment: "zijn jullie helemaal koekwaus geworden",
