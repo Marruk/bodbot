@@ -2,7 +2,7 @@
 // @ts-expect-error "javascript noob"
 import tadej from "../bots/tadej"
 import mark from "../bots/mark.ts"
-// import niels from "../bots/niels"
+import niels from "../bots/niels"
 import jonas from "../bots/jonas"
 import eddyMerckx from "../bots/eddyMerckx.ts";
 // import daan from "../bots/daan"
@@ -51,12 +51,12 @@ export const BOTS: { [key: string]: Bot } = {
   //   name: "De ultieme veiler",
   //   code: eddyMerckx,
   // },
-  // 'niels': {
-  //   key: 'niels',
-  //   owner: 'Niels',
-  //   name: 'De gezelligstebiedbot',
-  //   code: niels
-  // },
+  'niels': {
+    key: 'niels',
+    owner: 'Niels',
+    name: 'De gezelligstebiedbot',
+    code: niels
+  },
   // 'lucas': {
   //   key: 'lucas',
   //   owner: 'Lucas',
