@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import type { PlayerKey } from "@/models/auction.models"
+
 export default function bot(
   rider: string,
   riderBib: number,
   highestBid: number | null,
-  highestBidBy: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'tom' | 'jonas' | 'tadej' | 'wout' | null,
+  highestBidBy: PlayerKey | null,
   bids: {
-    player: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'tom' | 'jonas' | 'tadej' | 'wout',
+    player: PlayerKey,
     amount: number,
     comment: string | null,
   }[],
@@ -19,7 +21,7 @@ export default function bot(
     }[],
   },
   others: {
-    key: 'daan' | 'mark' | 'niels' | 'hannah' | 'joran' | 'tom' | 'jonas' | 'tadej' | 'wout',
+    key: PlayerKey,
     moneyLeft: number,
     riders: {
       name: string,

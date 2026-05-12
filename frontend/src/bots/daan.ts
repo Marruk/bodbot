@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import type { PlayerKey } from "@/models/auction.models";
+
 // wordt alleen aangeroepen als:
 // - je team niet vol is
 // - je meer geld hebt dan het laatste hoogste bod
@@ -10,29 +12,10 @@ export default function bot(
   rider: string, // naam zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical
   riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical (-1 als het niet bekend is)
   highestBid: number | null, // hoogste bod, is nooit van jou
-  highestBidBy:
-    | "daan"
-    | "mark"
-    | "niels"
-    | "lucas"
-    | "hannah"
-    | "joran"
-    | "jonas"
-    | "tadej"
-    | "wout"
-    | null, // hoogste bod persoon
+  highestBidBy: PlayerKey | null,
   bids: {
     // alle boden (in oplopende volgorde), inclusief die van jou
-    player:
-      | "daan"
-      | "mark"
-      | "niels"
-      | "lucas"
-      | "hannah"
-      | "joran"
-      | "jonas"
-      | "tadej"
-      | "wout"; // naam
+    player: PlayerKey; // naam
     amount: number; // geboden bedrag
     comment: string | null; // leuk berichtje
   }[],
@@ -47,16 +30,7 @@ export default function bot(
   },
   others: {
     // de rest, jij komt hier niet voor
-    key:
-      | "daan"
-      | "mark"
-      | "niels"
-      | "lucas"
-      | "hannah"
-      | "joran"
-      | "jonas"
-      | "tadej"
-      | "wout"; // iedereen die meedoet
+    key: PlayerKey; // iedereen die meedoet
     moneyLeft: number; // hoeveel geld ze nog hebben
     riders: {
       // wie ze al in hun team hebben

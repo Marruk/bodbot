@@ -1,10 +1,13 @@
 from fastapi import APIRouter
-from ..eddyMerckx import bot as eddy_bot
-from ..wout import bot as wout_bot
-from ..lucas import bot as lucas_bot
-from ..hendrik import bot as hendrik_bot
 from typing import Optional
 from pydantic import BaseModel
+from ..dummies.wout import bot as wout_bot
+
+# Ok nu echt
+from ..eddyMerckx import bot as eddy_bot
+from ..lucas import bot as lucas_bot
+from ..hendrik import bot as hendrik_bot
+from ..tom import bot as tom_bot
 
 
 class BidEntry(BaseModel):
@@ -127,7 +130,7 @@ def call_wout(req: BotRequest):
 
 @router.post("/tom")
 def call_wout(req: BotRequest):
-    return hendrik_bot(
+    return tom_bot(
         rider=req.rider,
         rider_bib=req.riderBib,
         highest_bid=req.highestBid,

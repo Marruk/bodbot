@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import type { PlayerKey } from "@/models/auction.models"
 import { rankingList } from "./ranking"
+
 const AANTAL_RENNERS_PER_TEAM = 8
 const TONNETJE = 100_000
 
@@ -6,31 +9,10 @@ export default function bot(
   rider: string, // naam zoals op https://www.procyclingstats.com/race/giro-d-italia/2026/startlist/alphabetical
   riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/giro-d-italia/2026/startlist/alphabetical (-1 als het niet bekend is)
   highestBid: number | null, // hoogste bod, is nooit van jou
-  highestBidBy:
-    | "daan"
-    | "mark"
-    | "niels"
-    | "lucas"
-    | "hannah"
-    | "joran"
-    | "tom"
-    | "jonas"
-    | "tadej"
-    | "wout"
-    | null, // hoogste bod persoon
+  highestBidBy: PlayerKey | null, // hoogste bod persoon
   bids: {
     // alle boden (in oplopende volgorde), inclusief die van jou
-    player:
-      | "daan"
-      | "mark"
-      | "niels"
-      | "lucas"
-      | "hannah"
-      | "joran"
-      | "tom"
-      | "jonas"
-      | "tadej"
-      | "wout" // naam
+    player: PlayerKey // naam
     amount: number // geboden bedrag
     comment: string | null // leuk berichtje
   }[],
@@ -45,17 +27,7 @@ export default function bot(
   },
   others: {
     // de rest, jij komt hier niet voor
-    key:
-      | "daan"
-      | "mark"
-      | "niels"
-      | "lucas"
-      | "hannah"
-      | "joran"
-      | "tom"
-      | "jonas"
-      | "tadej"
-      | "wout" // iedereen die meedoet
+    key: PlayerKey // iedereen die meedoet
     moneyLeft: number // hoeveel geld ze nog hebben
     riders: {
       // wie ze al in hun team hebben
