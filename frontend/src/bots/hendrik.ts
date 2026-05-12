@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import type { PlayerKey } from "@/models/auction.models"
+
 // wordt alleen aangeroepen als:
 // - je team niet vol is
 // - je meer geld hebt dan het laatste hoogste bod
@@ -7,12 +9,12 @@
 // komt eigenlijk gewoon neer als het nog zin heeft om een bod te doen dus ja
 
 export default function bot(
-  rider: string, // naam zoals op https://www.procyclingstats.com/race/giro-d-italia/2026/startlist/alphabetical
-  riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/giro-d-italia/2026/startlist/alphabetical (-1 als het niet bekend is)
+  rider: string, // naam zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical
+  riderBib: number, // nummer zoals op https://www.procyclingstats.com/race/vuelta-a-espana/2025/startlist/alphabetical (-1 als het niet bekend is)
   highestBid: number | null, // hoogste bod, is nooit van jou
-  highestBidBy: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'tom' | 'hendrik' | 'jonas' | 'tadej' | 'wout' | null, // hoogste bod persoon
+  highestBidBy: PlayerKey | null, // hoogste bod persoon
   bids: { // alle boden (in oplopende volgorde), inclusief die van jou
-    player: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'tom' | 'hendrik' | 'jonas' | 'tadej' | 'wout', // naam
+    player: PlayerKey, // naam
     amount: number, // geboden bedrag
     comment: string | null, // leuk berichtje
   }[],
@@ -25,7 +27,7 @@ export default function bot(
     }[],
   },
   others: { // de rest, jij komt hier niet voor
-    key: 'daan' | 'mark' | 'niels' | 'lucas' | 'hannah' | 'joran' | 'tom' | 'hendrik' | 'jonas' | 'tadej' | 'wout', // iedereen die meedoet
+    key: PlayerKey, // iedereen die meedoet
     moneyLeft: number, // hoeveel geld ze nog hebben
     riders: { // wie ze al in hun team hebben
       name: string, // fietser
@@ -52,22 +54,19 @@ export default function bot(
       climber: number,
       hills: number,
     },
-    pointsPerSeasonHistory: { // punten per seizoen, aflopend
+    pointsPerSeasonHistory: { // punten per seizoen
       season: number, // jaartal
       points: number, // aantal punten
       rank: number, // ranking van dat jaar
     }[],
   } | null,
-): {
-  amount: number | null, // hoeveel je wil bieden, moet deelbaar zijn door een ton
+): Promise<{
   comment: string | null // leuk berichtje doe iedereen de groeten
-} {
-  const randomAmount = (highestBid ?? 0) + (100000 * Math.round(Math.random() * 5 + 1))
-
-  const doBid = Math.random() < 0.5
-
-  return {
-    amount: doBid ? Math.min(you.moneyLeft, randomAmount) : null,
-    comment: doBid ? "ok dit is echt mijn laatste bod" : "deze hoef ik niet"
-  }
+  amount: number | null, // hoeveel je wil bieden, moet deelbaar zijn door een ton
+}> {
+  return fetch('http://localhost:8000/bot/hendrik', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rider, riderBib, highestBid, highestBidBy, bids, you, others, upcomingRiders, previousRiders, riderInfo })
+  }).then(r => r.json())
 }

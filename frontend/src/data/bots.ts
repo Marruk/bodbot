@@ -10,6 +10,7 @@ import lucas from "../bots/lucas"
 // import hannah from "../bots/hannah/hannah.ts"
 // import joran from "../bots/joran"
 import wout from "../bots/wout"
+import hendrik from "../bots/hendrik.ts"
 
 import type { Bot } from "../models/auction.models"
 
@@ -38,12 +39,18 @@ export const BOTS: { [key: string]: Bot } = {
     name: 'Lekker Fietsen',
     code: mark
   },
-  daan: {
-    key: "daan",
-    owner: "Daan",
-    name: "De ultieme veiler",
-    code: eddyMerckx,
+  'hendrik': {
+    key: 'hendrik',
+    owner: 'De Betere Niels',
+    name: 'Lekker Fietsen',
+    code: hendrik
   },
+  // daan: {
+  //   key: "daan",
+  //   owner: "Daan",
+  //   name: "De ultieme veiler",
+  //   code: eddyMerckx,
+  // },
   // 'niels': {
   //   key: 'niels',
   //   owner: 'Niels',
