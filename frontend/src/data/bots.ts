@@ -10,7 +10,7 @@ import niels from "../bots/niels"
 import daan from "../bots/daan";
 import tom from "../bots/tom";
 import lucas from "../bots/lucas"
-// import hannah from "../bots/hannah/hannah.ts"
+import hannah from "../bots/hannah/hannah"
 import joran from "../bots/joran/joran"
 import hendrik from "../bots/hendrik"
 
@@ -76,5 +76,11 @@ export const BOTS: { [key: string]: Bot } = {
     owner: 'Joran',
     name: 'Hallo',
     code: joran
+  },
+  'hannah': {
+    key: 'hannah',
+    owner: 'Hannah',
+    name: 'Hoi',
+    code: hannah
   },
 }
