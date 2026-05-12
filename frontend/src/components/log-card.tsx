@@ -39,7 +39,7 @@ export default function LogCard({ item }: { item: LogItem }) {
                 <>We zijn los!</>
               }
               {item.type === 'AUCTION_ENDED' &&
-                <>Tis klaar</>
+                <>Tis gedaan precies</>
               }
               {item.type === 'LOT_ENDED' &&
                 <Tooltip>

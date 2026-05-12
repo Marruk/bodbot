@@ -6,7 +6,7 @@ import mark from "../bots/mark.ts"
 import jonas from "../bots/jonas"
 import eddyMerckx from "../bots/eddyMerckx.ts";
 // import daan from "../bots/daan"
-// import lucas from "../bots/lucas"
+import lucas from "../bots/lucas"
 // import hannah from "../bots/hannah/hannah.ts"
 // import joran from "../bots/joran"
 import wout from "../bots/wout"
@@ -57,12 +57,12 @@ export const BOTS: { [key: string]: Bot } = {
   //   name: 'De gezelligstebiedbot',
   //   code: niels
   // },
-  // 'lucas': {
-  //   key: 'lucas',
-  //   owner: 'Lucas',
-  //   name: 'Lucadance 100rpm',
-  //   code: lucas
-  // },
+  'lucas': {
+    key: 'lucas',
+    owner: 'Lucas',
+    name: 'Lucadance 100rpm',
+    code: lucas
+  },
   // 'hannah': {
   //   key: 'hannah',
   //   owner: 'Hannah',
