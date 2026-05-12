@@ -1,7 +1,7 @@
 import { Separator } from '@radix-ui/react-separator';
 import { Rabbit, Tablets, Turtle, Zap } from 'lucide-react';
 import { useEffect, useReducer, useRef, useState } from 'react';
-import { Toaster } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import './App.css';
 import AuctionInfo from './components/auction-info';
 import Header from './components/header';
@@ -20,7 +20,21 @@ import type { Bid, BotResponse, PlayerKey, RiderInfo, Team } from './models/auct
 import { auctionReducer } from './state/auction.reducer';
 import { initialState, type State } from './state/auction.state';
 
+const STORAGE_KEY = 'bodbot-auction-state'
+
 function initState(): State {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const parsed = JSON.parse(saved) as State
+      const teams = parsed.teams.map(t => ({ ...t, bot: BOTS[t.key] }))
+      if (teams.every(t => t.bot)) {
+        return { ...parsed, teams }
+      }
+    }
+  } catch {
+    // fall through
+  }
   return { ...initialState }
 }
 
@@ -37,8 +51,21 @@ function App() {
   const [isTurboMode, setTurboMode] = useState(false)
   const [turboSpeed, setTurboSpeed] = useState("default")
   const nextRiderRef = useRef<HTMLButtonElement>(null)
+  const initialStartlistLengthRef = useRef(state.startlist.length)
 
   useEffect(() => {
+    if (state.currentLot?.status !== 'ongoing') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    }
+  }, [state])
+
+  const handleReset = () => {
+    localStorage.removeItem(STORAGE_KEY)
+    window.location.reload()
+  }
+
+  useEffect(() => {
+    if (initialStartlistLengthRef.current > 0) return
     fetch('http://localhost:8000/startlist/giro-d-italia/2026')
       .then(r => r.json())
       .then(riders => dispatch({ type: 'set-startlist', riders }))
@@ -188,7 +215,7 @@ function App() {
       {(windowSize.height >= 640 && windowSize.width >= 640) ?
         <>
           <div className="flex flex-col h-screen overflow-hidden">
-            <Header getSerializedState={getSerializedState} setState={setState} />
+            <Header getSerializedState={getSerializedState} setState={setState} onReset={handleReset} />
             <div className="flex-none px-8 pb-6">
               <Teams teams={state.teams}></Teams>
             </div>

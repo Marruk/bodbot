@@ -1,5 +1,5 @@
 import type { State } from "@/state/auction.state"
-import { Bike, Copy, Import } from "lucide-react"
+import { Bike, Copy, Import, RotateCcw } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { ThemeToggle } from "./theme/theme-toggle"
@@ -7,7 +7,7 @@ import { Button } from "./ui/button"
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { Input } from "./ui/input"
 
-export default function Header({ getSerializedState, setState }: { getSerializedState: () => string; setState: (state: State) => void; }) {
+export default function Header({ getSerializedState, setState, onReset }: { getSerializedState: () => string; setState: (state: State) => void; onReset: () => void }) {
   const [importJsonString, setImportJsonString] = useState("")
   const [importDialogOpen, setImportDialogOpen] = useState(false)
 
@@ -42,6 +42,9 @@ export default function Header({ getSerializedState, setState }: { getSerialized
               </h1>
             </div>
             <div className="flex gap-2">
+              <Button onClick={onReset} variant="outline">
+                <RotateCcw /> Ff opnieuw
+              </Button>
               <Button onClick={() => onCopyStateClicked()} variant="outline">
                 <Copy /> Kopieer tsjak
               </Button>
