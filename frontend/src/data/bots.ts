@@ -12,32 +12,32 @@ import lucas from "../bots/lucas"
 import wout from "../bots/wout"
 import hendrik from "../bots/hendrik.ts"
 
-import type { Bot } from "../models/auction.models"
+import type { Bot } from "../models/auction.models";
 
 export const BOTS: { [key: string]: Bot } = {
-  'jonas': {
-    key: 'jonas',
-    owner: 'Jonas',
-    name: 'Hatsiekadee',
-    code: jonas
+  jonas: {
+    key: "jonas",
+    owner: "Jonas",
+    name: "Hatsiekadee",
+    code: jonas,
   },
-  'tadej': {
-    key: 'tadej',
-    owner: 'Tadej',
-    name: 'Hotseflots',
-    code: tadej
+  tadej: {
+    key: "tadej",
+    owner: "Tadej",
+    name: "Hotseflots",
+    code: tadej,
   },
-  'wout': {
-    key: 'wout',
-    owner: 'Wout',
-    name: 'Gezellig',
-    code: wout
+  wout: {
+    key: "wout",
+    owner: "Wout",
+    name: "Gezellig",
+    code: wout,
   },
-  'mark': {
-    key: 'mark',
-    owner: 'Mark',
-    name: 'Lekker Fietsen',
-    code: mark
+  mark: {
+    key: "mark",
+    owner: "Mark",
+    name: "Lekker Fietsen",
+    code: mark,
   },
   'hendrik': {
     key: 'hendrik',
