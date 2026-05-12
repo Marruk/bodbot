@@ -5,45 +5,52 @@ import mark from "../bots/mark.ts"
 import niels from "../bots/niels"
 import jonas from "../bots/jonas"
 import eddyMerckx from "../bots/eddyMerckx.ts";
+import tom from "../bots/tom";
 // import daan from "../bots/daan"
-// import lucas from "../bots/lucas"
+import lucas from "../bots/lucas"
 // import hannah from "../bots/hannah/hannah.ts"
 // import joran from "../bots/joran"
 import wout from "../bots/wout"
 import hendrik from "../bots/hendrik.ts"
 
-import type { Bot } from "../models/auction.models"
+import type { Bot } from "../models/auction.models";
 
 export const BOTS: { [key: string]: Bot } = {
-  'jonas': {
-    key: 'jonas',
-    owner: 'Jonas',
-    name: 'Hatsiekadee',
-    code: jonas
+  jonas: {
+    key: "jonas",
+    owner: "Jonas",
+    name: "Hatsiekadee",
+    code: jonas,
   },
-  'tadej': {
-    key: 'tadej',
-    owner: 'Tadej',
-    name: 'Hotseflots',
-    code: tadej
+  tadej: {
+    key: "tadej",
+    owner: "Tadej",
+    name: "Hotseflots",
+    code: tadej,
   },
-  'wout': {
-    key: 'wout',
-    owner: 'Wout',
-    name: 'Gezellig',
-    code: wout
+  wout: {
+    key: "wout",
+    owner: "Wout",
+    name: "Gezellig",
+    code: wout,
   },
-  'mark': {
-    key: 'mark',
-    owner: 'Mark',
-    name: 'Lekker Fietsen',
-    code: mark
+  mark: {
+    key: "mark",
+    owner: "Mark",
+    name: "Lekker Fietsen",
+    code: mark,
   },
   'hendrik': {
     key: 'hendrik',
     owner: 'De Betere Niels',
-    name: 'Lekker Fietsen',
+    name: 'Lekker blijven trappen',
     code: hendrik
+  },
+  'tom': {
+    key: 'tom',
+    owner: 'Tom',
+    name: 'Lekker Fietsen',
+    code: tom
   },
   // daan: {
   //   key: "daan",
@@ -63,6 +70,18 @@ export const BOTS: { [key: string]: Bot } = {
   //   name: 'Lucadance 100rpm',
   //   code: lucas
   // },
+  // 'niels': {
+  //   key: 'niels',
+  //   owner: 'Niels',
+  //   name: 'De gezelligstebiedbot',
+  //   code: niels
+  // },
+  'lucas': {
+    key: 'lucas',
+    owner: 'Lucas',
+    name: 'Lucadance 100rpm',
+    code: lucas
+  },
   // 'hannah': {
   //   key: 'hannah',
   //   owner: 'Hannah',
