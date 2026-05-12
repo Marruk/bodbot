@@ -124,3 +124,18 @@ def call_wout(req: BotRequest):
         previous_riders=req.previousRiders,
         rider_info=req.riderInfo.model_dump() if req.riderInfo else None,
     )
+
+@router.post("/tom")
+def call_wout(req: BotRequest):
+    return hendrik_bot(
+        rider=req.rider,
+        rider_bib=req.riderBib,
+        highest_bid=req.highestBid,
+        highest_bid_by=req.highestBidBy,
+        bids=[b.model_dump() for b in req.bids],
+        you=req.you.model_dump(),
+        others=[o.model_dump() for o in req.others],
+        upcoming_riders=req.upcomingRiders,
+        previous_riders=req.previousRiders,
+        rider_info=req.riderInfo.model_dump() if req.riderInfo else None,
+    )
