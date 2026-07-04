@@ -11,10 +11,10 @@ import wout from "../bots/dummies/wout"
 // import tom from "../bots/tom";
 // import lucas from "../bots/lucas"
 // import hannah from "../bots/hannah/hannah"
-// import joran from "../bots/joran/joran"
+import joran from "../bots/joran/joran"
 // import hendrik from "../bots/hendrik"
 
-import type { Bot } from "../models/auction.models";
+import type { Bot } from "../models/auction.models"
 
 export const BOTS: { [key: string]: Bot } = {
   jonas: {
@@ -71,12 +71,12 @@ export const BOTS: { [key: string]: Bot } = {
   //   name: 'Lucadance 100rpm',
   //   code: lucas
   // },
-  // 'joran': {
-  //   key: 'joran',
-  //   owner: 'Joran',
-  //   name: 'Hallo',
-  //   code: joran
-  // },
+  joran: {
+    key: "joran",
+    owner: "Joran",
+    name: "Hallo",
+    code: joran,
+  },
   // 'hannah': {
   //   key: 'hannah',
   //   owner: 'Hannah',
