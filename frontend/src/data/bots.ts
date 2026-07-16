@@ -5,7 +5,7 @@ import jonas from "../bots/dummies/jonas"
 import wout from "../bots/dummies/wout"
 
 // Ok nu de echte
-// import mark from "../bots/mark.ts"
+import mark from "../bots/mark.ts"
 // import niels from "../bots/niels"
 // import daan from "../bots/daan";
 // import tom from "../bots/tom";
@@ -35,12 +35,12 @@ export const BOTS: { [key: string]: Bot } = {
     name: "Gezellig",
     code: wout,
   },
-  // mark: {
-  //   key: "mark",
-  //   owner: "Mark",
-  //   name: "Lekker Fietsen",
-  //   code: mark,
-  // },
+  mark: {
+    key: "mark",
+    owner: "Mark",
+    name: "Lekker Fietsen",
+    code: mark,
+  },
   // 'hendrik': {
   //   key: 'hendrik',
   //   owner: 'De Betere Niels',
