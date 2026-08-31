@@ -320,7 +320,7 @@ async function prepareLotData(state: State, isTurboMode: boolean, turboSpeed: st
   const riderStartListEntry = state.startlist.find(r => r.name === rider)
   let riderInfo: RiderInfo | null = null
 
-  if (riderStartListEntry !== undefined && (turboSpeed !== 'ultra' || !isTurboMode)) {
+  if (riderStartListEntry !== undefined && !isTurboMode) {
     try {
       const res = await fetch(`http://localhost:8000/${riderStartListEntry.url}`)
       if (res.ok) riderInfo = await res.json()
