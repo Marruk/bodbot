@@ -7,6 +7,7 @@ import AuctionInfo from './components/auction-info';
 import Header from './components/header';
 import Log from './components/log';
 import Lot from './components/lot';
+import StatsFetchFailsafe from './components/stats-fetch-failsafe';
 import Teams from './components/teams';
 import { useTheme } from './components/theme/theme-provider';
 import { Button } from './components/ui/button';
@@ -50,8 +51,20 @@ function App() {
   const [isLoadingRider, setIsLoadingRider] = useState(false)
   const [isTurboMode, setTurboMode] = useState(false)
   const [turboSpeed, setTurboSpeed] = useState("default")
+  const [statsFetchFailedRider, setStatsFetchFailedRider] = useState<string | null>(null)
   const nextRiderRef = useRef<HTMLButtonElement>(null)
   const initialStartlistLengthRef = useRef(state.startlist.length)
+  const statsDecisionRef = useRef<((decision: 'retry' | 'skip') => void) | null>(null)
+
+  const awaitStatsDecision = (rider: string): Promise<'retry' | 'skip'> => {
+    setStatsFetchFailedRider(rider)
+    return new Promise<'retry' | 'skip'>((resolve) => {
+      statsDecisionRef.current = (decision) => {
+        setStatsFetchFailedRider(null)
+        resolve(decision)
+      }
+    })
+  }
 
   useEffect(() => {
     if (state.currentLot?.status !== 'ongoing') {
@@ -66,7 +79,7 @@ function App() {
 
   useEffect(() => {
     if (initialStartlistLengthRef.current > 0) return
-    fetch('http://localhost:8000/startlist/tour-de-france/2026')
+    fetch('http://localhost:8000/startlist/vuelta-a-espana/2026')
       .then(r => r.json())
       .then(riders => dispatch({ type: 'set-startlist', riders }))
       .catch(() => {
@@ -93,7 +106,7 @@ function App() {
 
   const startLot = async () => {
     setIsLoadingRider(true)
-    const { rider, riderBib, riderInfo, playerOrder, players, upcomingRiders, previousRiders } = await prepareLotData(state, isTurboMode, turboSpeed)
+    const { rider, riderBib, riderInfo, playerOrder, players, upcomingRiders, previousRiders } = await prepareLotData(state, isTurboMode, turboSpeed, awaitStatsDecision)
     setIsLoadingRider(false)
 
     dispatch({ type: 'lot-start', rider, riderInfo, playerOrder })
@@ -220,7 +233,14 @@ function App() {
               <Teams teams={state.teams}></Teams>
             </div>
             <div className="flex-[1_0_0] px-8 overflow-hidden">
-              {state.status === 'ongoing' && state.currentLot !== null &&
+              {statsFetchFailedRider !== null ?
+                <StatsFetchFailsafe
+                  rider={statsFetchFailedRider}
+                  onRetry={() => statsDecisionRef.current?.('retry')}
+                  onSkip={() => statsDecisionRef.current?.('skip')}
+                />
+                :
+                state.status === 'ongoing' && state.currentLot !== null &&
                 <Lot lot={state.currentLot} />
               }
             </div>
@@ -308,7 +328,7 @@ function App() {
 
 export default App
 
-async function prepareLotData(state: State, isTurboMode: boolean, turboSpeed: string): Promise<{ rider: string, riderBib: number, riderInfo: RiderInfo | null, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[] }> {
+async function prepareLotData(state: State, isTurboMode: boolean, turboSpeed: string, onStatsFetchFailed: (rider: string) => Promise<'retry' | 'skip'>): Promise<{ rider: string, riderBib: number, riderInfo: RiderInfo | null, playerOrder: PlayerKey[], players: Team[], upcomingRiders: string[], previousRiders: string[] }> {
   const randomRiderIndex = Math.floor(Math.random() * (state.upcomingRiders.length - 1))
   const rider = state.upcomingRiders[randomRiderIndex]
   const randomOrder = shufflePlayerOrder(Array(state.teams.length).fill(0).map((_, i) => i))
@@ -321,12 +341,7 @@ async function prepareLotData(state: State, isTurboMode: boolean, turboSpeed: st
   let riderInfo: RiderInfo | null = null
 
   if (riderStartListEntry !== undefined && !isTurboMode) {
-    try {
-      const res = await fetch(`http://localhost:8000/${riderStartListEntry.url}`)
-      if (res.ok) riderInfo = await res.json()
-    } catch {
-      // fail silently
-    }
+    riderInfo = await fetchRiderInfo(riderStartListEntry.url, rider, onStatsFetchFailed)
   }
 
   return {
@@ -337,6 +352,20 @@ async function prepareLotData(state: State, isTurboMode: boolean, turboSpeed: st
     players: state.teams,
     upcomingRiders,
     previousRiders: state.previousRiders,
+  }
+}
+
+async function fetchRiderInfo(url: string, rider: string, onStatsFetchFailed: (rider: string) => Promise<'retry' | 'skip'>): Promise<RiderInfo | null> {
+  while (true) {
+    try {
+      const res = await fetch(`http://localhost:8000/${url}`)
+      if (res.ok) return await res.json()
+    } catch {
+      // network error, fall through to failsafe
+    }
+
+    const decision = await onStatsFetchFailed(rider)
+    if (decision === 'skip') return null
   }
 }
 
