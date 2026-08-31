@@ -6,7 +6,7 @@ TONNETJE = 100_000
 SPOTS_PER_TEAM = 8
 BASELINE_BEST_AVG = 1500.0
 
-GIRO_FAVORITES_RAW = ["Jonas Vingegaard", "Jai Hindley", "Egan Bernal"]
+VUELTA_FAVORITES_RAW = ["Tadej Pogacar", "Felix Gall", "Oscar Onley", "Enric Mas", "Richard Carapaz", "Mattias Skjelmose", "Sepp Kuss"]
 
 
 def _name_tokens(name: str | None) -> set[str]:
@@ -17,12 +17,12 @@ def _name_tokens(name: str | None) -> set[str]:
     return set(ascii_name.split())
 
 
-GIRO_FAVORITE_TOKENS: list[set[str]] = [_name_tokens(n) for n in GIRO_FAVORITES_RAW]
+VUELTA_FAVORITE_TOKENS: list[set[str]] = [_name_tokens(n) for n in VUELTA_FAVORITES_RAW]
 
 
 def _is_favorite(rider_name: str | None) -> bool:
     rider_tokens = _name_tokens(rider_name)
-    return any(fav.issubset(rider_tokens) for fav in GIRO_FAVORITE_TOKENS)
+    return any(fav.issubset(rider_tokens) for fav in VUELTA_FAVORITE_TOKENS)
 
 # - kijkt naar pointsPerSeasonHistory (recent eerst, huidige jaar gefilterd)
 # - vergelijkt gemiddelde van laatste 2 seizoenen tegen de 2 daarvoor
@@ -143,7 +143,7 @@ def bot(
         if target_fav < base_bid:
             return {"amount": None, "comment": "geen centjes meer voor de favo"}
         suffix = "deze MOET ik hebben" if not uncontested else "favo, kom hier"
-        return {"amount": target_fav, "comment": f"{rider} is een Giro-favoriet, {suffix}"}
+        return {"amount": target_fav, "comment": f"{rider} is een Vuelta-favoriet, {suffix}"}
 
     if len(history) == 0:
         if panic_mode and panic_filler_bid:
